@@ -1,49 +1,61 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-include("../modelo/usuario.php");
+require_once(__DIR__ . '/../modelo/ApiClient.php');
+
+$api = new ApiClient();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit'])) {
-    $id = $_POST['id'];
-    $nombre = $_POST['nombre'];
-    $paterno = $_POST['paterno'];
-    $materno = $_POST['materno'];
-    $ci = $_POST['ci'];
-    $usuario = $_POST['usuario'];
+    $id = intval($_POST['id']);
+    $nombre = trim($_POST['nombre']);
+    $paterno = trim($_POST['paterno']);
+    $materno = trim($_POST['materno']);
+    $ci = trim($_POST['ci']);
+    $username = trim($_POST['usuario']);
     $fecha = $_POST['fecha'];
     $tipo = $_POST['tipo'];
-    $email = $_POST['email'];
+    $email = trim($_POST['email']);
     $estado = $_POST['estado'];
-
-    $u = new Usuario(
-        "",
-        $nombre,
-        $paterno,
-        $materno,
-        $ci,
-        $usuario,
-        "",  
-        $fecha,
-        $tipo,
-        $email,
-        $id,
-        $estado
-    );
-
-    $res = $u->editarUsuario();
-
-    if ($res) {
-        echo "<script>alert('Se modificó correctamente'); location.href='../controlador/usuarioLista.php';</script>";
+    
+    $response = $api->patch("/usuario/{$id}", [
+        'nombre' => $nombre,
+        'paterno' => $paterno,
+        'materno' => $materno,
+        'ci' => $ci,
+        'username' => $username,
+        'fecha_nacimiento' => $fecha,
+        'tipo_usuario' => $tipo,
+        'email' => $email,
+        'estado' => $estado
+    ]);
+    
+    if ($response['success']) {
+        ?>
+        <script>
+            alert('Usuario modificado correctamente');
+            location.href='../controlador/usuarioLista.php';
+        </script>
+        <?php
     } else {
-        echo "<script>alert('Modificación incorrecta');</script>";
+        ?>
+        <script>
+            alert('Error al modificar: <?php echo addslashes($response['error']); ?>');
+        </script>
+        <?php
     }
-
 } elseif (isset($_GET['id'])) {
-    $id = $_GET['id'];
-    $conexion = new Conexion();
-    $sql = $conexion->query("SELECT * FROM usuarios WHERE id_usuario = '$id'");
-    $datos = mysqli_fetch_array($sql);
-    include("../vista/usuarioEditar.php");
-
+    $id = intval($_GET['id']);
+    $response = $api->get("/usuario/{$id}");
+    
+    if ($response['success']) {
+        $datos = $response['data'];
+        include("../vista/usuarioEditar.php");
+    } else {
+        ?>
+        <script>
+            alert('Usuario no encontrado');
+            location.href='../controlador/usuarioLista.php';
+        </script>
+        <?php
+    }
 } else {
     echo "Error: ID de usuario no proporcionado.";
 }

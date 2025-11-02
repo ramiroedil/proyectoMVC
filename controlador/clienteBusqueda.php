@@ -1,18 +1,20 @@
 <?php
-include("../modelo/clienteClase.php");
+require_once(__DIR__ . '/../modelo/ApiClient.php');
 
-$datos = []; // Inicializa la variable para evitar errores en la vista
+$datos = [];
 
 if (isset($_GET["Buscar"])) {
-    $nombreCliente = $_GET["cliente"]; // Variable corregida
-    $cliente = new clientes("", "", "", ""); // Asegúrate de que la clase existe
-    $resultados = $cliente->buscarCliente($nombreCliente); // Pasar parámetro
-        while ($fila = mysqli_fetch_array($resultados)) {
-        $datos[] = $fila;
+    $nombreCliente = trim($_GET["cliente"]);
+    
+    if (!empty($nombreCliente)) {
+        $api = new ApiClient();
+        $response = $api->get('/cliente/search', ['query' => $nombreCliente]);
+        
+        if ($response['success']) {
+            $datos = $response['data'];
+        }
     }
 }
 
-// Cargar la vista con los datos obtenidos (si hay búsqueda) o vacía
 include("../vista/clienteBuscar.php");
 ?>
-

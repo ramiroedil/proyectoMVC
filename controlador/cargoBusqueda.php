@@ -1,22 +1,20 @@
 <?php
-include("../modelo/cargoClase.php");
+require_once(__DIR__ . '/../modelo/ApiClient.php');
+
+$datos = [];
 
 if (isset($_GET["Buscar"])) {
-    $nombreCargo = $_GET["cargo"];
-    $cargo = new Cargo("","");
-    $resultados = $cargo->buscarCargo($nombreCargo);
-
-    // Guardar los resultados para usarlos en la vista
-    $datos = [];
-    while ($fila = mysqli_fetch_array($resultados)) {
-        $datos[] = $fila;
+    $nombreCargo = trim($_GET["cargo"]);
+    
+    if (!empty($nombreCargo)) {
+        $api = new ApiClient();
+        $response = $api->get('/cargo/search', ['query' => $nombreCargo]);
+        
+        if ($response['success']) {
+            $datos = $response['data'];
+        }
     }
-
-
-    // Cargar la vista con los datos obtenidos
-    include("../vista/cargoBuscar.php");
-} else {
-    // Si no hay búsqueda, solo cargamos la vista vacía
-    include("../vista/cargoBuscar.php");
 }
+
+include("../vista/cargoBuscar.php");
 ?>

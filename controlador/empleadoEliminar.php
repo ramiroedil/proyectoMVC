@@ -1,23 +1,27 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+require_once(__DIR__ . '/../modelo/ApiClient.php');
 
-$id = $_GET['id'];
-#`id_empleado`,`id_cargo`, `ci`, `nombre`, `paterno`, `materno`, `direccion`, `telefono`, `fechanacimiento`, `genero`
-include("../modelo/empleadoClase.php");
-$emp = new Empleado($id, "", "", "", "", "", "", "", "", "", "");
-$r = $emp->elimEmpleado();
-if ($r) {
+if (!isset($_GET['id'])) {
+    header('Location: ../controlador/empleadoLista.php');
+    exit();
+}
+
+$id = intval($_GET['id']);
+$api = new ApiClient();
+$response = $api->delete("/empleado/{$id}");
+
+if ($response['success']) {
     ?>
     <script type="text/javascript">
-        alert("Se elimino correctamente");
-        location.href = 'empleadoLista.php';
+        alert("Empleado eliminado correctamente");
+        location.href = '../controlador/empleadoLista.php';
     </script>
     <?php
 } else {
     ?>
     <script type="text/javascript">
-        alert("Eliminacion incorrecta");
+        alert("Error al eliminar: <?php echo addslashes($response['error']); ?>");
+        location.href = '../controlador/empleadoLista.php';
     </script>
     <?php
 }

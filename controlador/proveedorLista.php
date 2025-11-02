@@ -1,7 +1,15 @@
 <?php
-  include ("../modelo/proveedorClase.php");
-  $emp=new Proveedor("","","","","","","");
-  $res=$emp->lista();
-  $rs=$emp->lista();
-  include("../vista/proveedorLista.php");
+require_once(__DIR__ . '/../modelo/ApiClient.php');
+
+$api = new ApiClient();
+$response = $api->get('/proveedor/active');
+
+if ($response['success']) {
+    $proveedores = $response['data'];
+} else {
+    $proveedores = [];
+    $error_message = $response['error'];
+}
+
+include("../vista/proveedorLista.php");
 ?>

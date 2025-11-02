@@ -1,24 +1,26 @@
 <?php
+require_once(__DIR__ . '/../modelo/ApiClient.php');
+
 if (isset($_GET['id']) && isset($_GET['act']) && $_GET['act'] == "activar") {
-    $cid = $_GET['id'];
-    include("../modelo/clienteClase.php");
-    $cliente = new Clientes($cid, "", "", "");
-    $resultado = $cliente->activo(); 
-    if ($resultado) {
+    $id = intval($_GET['id']);
+    $api = new ApiClient();
+    
+    $response = $api->patch("/cliente/{$id}/activar");
+    
+    if ($response['success']) {
         ?>
         <script type="text/javascript">
-            alert("Cliente registrado con exito");
+            alert("Cliente activado con éxito");
             location.href = '../controlador/clienteLista.php';
-            </script>
-            <?php
-            }else{
-                ?>
-                <script type="text/javascript">
-                    
-            alert("Cliente NO registrado con exito");
-            </script>
-            <?php
-            }
-        
+        </script>
+        <?php
+    } else {
+        ?>
+        <script type="text/javascript">
+            alert("Error al activar: <?php echo addslashes($response['error']); ?>");
+            location.href = '../controlador/clienteLista.php';
+        </script>
+        <?php
+    }
 }
 ?>

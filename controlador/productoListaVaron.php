@@ -1,7 +1,15 @@
 <?php
-  include ("../modelo/productoClase.php");
-  $pro=new Producto("","","","","","","","","");
-  $ros=$pro->hombre();
-  $ro=$pro->hombre();
-  include("../vista/productoLista_varon.php");
+require_once(__DIR__ . '/../modelo/ApiClient.php');
+
+$api = new ApiClient();
+$response = $api->get('/producto/active', ['tipo' => 'varon']);
+
+if ($response['success']) {
+    $productos = $response['data'];
+} else {
+    $productos = [];
+    $error_message = $response['error'];
+}
+
+include("../vista/productoLista_varon.php");
 ?>

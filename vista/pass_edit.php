@@ -1,25 +1,21 @@
 <?php
+require_once(__DIR__ . '/../helpers/Session.php');
+
 include("../componentes/header.php");
-require_once(__DIR__ . '/../modelo/conexion.php');
-$conexion = new Conexion();
-$id = $_GET['id'];
-$consulta = "SELECT * FROM usuarios WHERE id_usuario = '" . $id . "'";
-$datos = mysqli_query($conexion, $consulta);
-$uEdit = mysqli_fetch_array($datos);
+
+$usuario = Session::getUser();
+$id = $_GET['id'] ?? $usuario['id_usuario'];
 ?>
 
 <div class="overlay"></div>
 
 <main class="main-wrapper">
-
     <?php if (isset($_GET['error'])): ?>
         <div class="alert alert-danger">
             <?php if ($_GET['error'] == 'contraseña_incorrecta'): ?>
                 La contraseña actual es incorrecta.
             <?php elseif ($_GET['error'] == 'contrasena_no_coincide'): ?>
                 Las contraseñas nuevas no coinciden.
-            <?php elseif ($_GET['error'] == 'usuario_no_encontrado'): ?>
-                Usuario no encontrado.
             <?php elseif ($_GET['error'] == 'fallo_actualizacion'): ?>
                 Error al actualizar la contraseña.
             <?php endif; ?>
@@ -45,42 +41,27 @@ $uEdit = mysqli_fetch_array($datos);
                             <div class="card-style mb-30">
                                 <h6 class="mb-25">Cambiar Contraseña</h6>
 
-                                <input type="hidden" name="id" value="<?= $uEdit['id_usuario'] ?>">
-                                <input type="hidden" name="nombre" value="<?= $uEdit['nombre'] ?>">
-                                <input type="hidden" name="nombreusuario" value="<?= $uEdit['nombreusuario'] ?>">
-                                <input type="hidden" name="tipousuario" value="<?= $uEdit['tipousuario'] ?>">
+                                <input type="hidden" name="id" value="<?= $id ?>">
 
-                                <div class="input-style-1">
+                                <div class="input-style-1 mb-3">
                                     <label>Contraseña actual:</label>
-                                    <input type="password" name="current_password"  id="current_password" required>
-                                    <i class="fa fa-eye" id="icono1"></i>
-                                        <button class="btn btn-outline-secondary" type="button"
-                                            id="togglePassword1"></button>
+                                    <input type="password" name="current_password" class="form-control" required>
                                 </div>
 
-                                <div class="input-style-1">
+                                <div class="input-style-1 mb-3">
                                     <label>Contraseña nueva:</label>
-                                    
-                                    <div class="col-sm-10 input">
-                                        <input type="password" class="form-control" name="new_password" id="password"
-                                            required pattern="(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}"
-                                            title="La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, un numero y un carácter especial." required /><i
-                                            class="fa fa-eye" id="icono"></i>
-                                        <button class="btn btn-outline-secondary" type="button"
-                                            id="togglePassword"></button>
-                                    </div>
+                                    <input type="password" class="form-control" name="new_password" 
+                                           pattern="(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}"
+                                           title="La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, un número y un carácter especial." 
+                                           required />
                                 </div>
 
-                                <div class="input-style-1">
+                                <div class="input-style-1 mb-3">
                                     <label>Confirmar contraseña nueva:</label>
-                                    <div class="col-sm-10 input">
-                                        <input type="password" class="form-control" name="confirm_new_password" id="confirm_new_password"
-                                            required pattern="(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}"
-                                            title="La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, un numero y un carácter especial." required /><i
-                                            class="fa fa-eye" id="icono2"></i>
-                                        <button class="btn btn-outline-secondary" type="button"
-                                            id="togglePassword2"></button>
-                                    </div>
+                                    <input type="password" class="form-control" name="confirm_new_password" 
+                                           pattern="(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}"
+                                           title="La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, un número y un carácter especial." 
+                                           required />
                                 </div>
 
                                 <button type="submit" class="btn btn-success"
@@ -97,41 +78,3 @@ $uEdit = mysqli_fetch_array($datos);
 
     <?php include("../componentes/footer.php"); ?>
 </main>
-
-<!-- Scripts -->
-<script src="assets/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/Chart.min.js"></script>
-<script src="assets/js/main.js"></script>
-<script>
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('password');
-    const icon = document.getElementById('icono');
-    togglePassword.addEventListener('click', function () {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-    });
-</script>
-<script>
-    const togglePassword1 = document.getElementById('togglePassword1');
-    const passwordInput1 = document.getElementById('current_password');
-    const icon1 = document.getElementById('icono1');
-    togglePassword1.addEventListener('click', function () {
-        const type1 = passwordInput1.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput1.setAttribute('type', type1);
-        icon1.classList.toggle('fa-eye');
-        icon1.classList.toggle('fa-eye-slash');
-    });
-</script>
-<script>
-    const togglePassword2 = document.getElementById('togglePassword2');
-    const passwordInput2 = document.getElementById('confirm_new_password');
-    const icon2 = document.getElementById('icono2');
-    togglePassword2.addEventListener('click', function () {
-        const type2 = passwordInput2.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput2.setAttribute('type', type2);
-        icon2.classList.toggle('fa-eye');
-        icon2.classList.toggle('fa-eye-slash');
-    });
-</script>

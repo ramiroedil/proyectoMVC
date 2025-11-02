@@ -1,12 +1,12 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-if (!isset($_SESSION['usuario']) || !isset($_SESSION['token'])) {
+require_once(__DIR__ . '/../helpers/Session.php');
+
+if (!Session::isAuthenticated()) {
     header('Location: ../index.php?sw=2');
     exit();
 }
-$usuario = $_SESSION['usuario'];
+
+$usuario = Session::getUser();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,7 +18,6 @@ $usuario = $_SESSION['usuario'];
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css" />
     <link rel="stylesheet" href="../assets/css/lineicons.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="../assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="../assets/css/fullcalendar.css" />
     <link rel="stylesheet" href="../assets/css/fullcalendar.css" />
     <link rel="stylesheet" href="../assets/css/main.css" />
     <link rel="stylesheet" href="../vendor/fontawesome-free-5.15.4-web/css/all.css">
@@ -35,42 +34,34 @@ $usuario = $_SESSION['usuario'];
         </div>
         <div class="offcanvas-body">
             <div class="btn-group-vertical mb-3 d-flex">
-                <?php
-                if ($usuario['tipousuario'] == 'administrador') {
-                    ?>
+                <?php if ($usuario['tipousuario'] == 'administrador'): ?>
                     <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
-                        href="../controlador/usuarioLista.php">USUARIOS
-                    </a>
+                        href="../controlador/usuarioLista.php">USUARIOS</a>
                     <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
-                        href="../controlador/ventaLista.php">LISTA DE VENTAS
-                    </a>
-                    <?php
-                }
-                ?>
+                        href="../controlador/ventaLista.php">LISTA DE VENTAS</a>
+                <?php endif; ?>
             </div>
-            <div class="btn-group-vertical mb-3 d-flex"><a type="button"
-                    class="btn btn-white btn-outline-secondary text-primary fw-bold"
+            <div class="btn-group-vertical mb-3 d-flex">
+                <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
                     href="../controlador/cargoLista.php">CARGO</a>
                 <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
                     href="../controlador/clienteLista.php">CLIENTE</a>
                 <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
                     href="../controlador/empleadoLista.php">EMPLEADOS</a>
                 <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
-                    href="../controlador/productoLista.php">PRODUCTO
-                </a>
+                    href="../controlador/productoLista.php">PRODUCTO</a>
                 <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
-                    href="../controlador/proveedorLista.php">PROVEEDOR
-                </a>
+                    href="../controlador/proveedorLista.php">PROVEEDOR</a>
                 <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
-                    href="../controlador/controladorVenta.php">VENTAS
-                </a>
+                    href="../controlador/controladorVenta.php">VENTAS</a>
             </div>
         </div>
     </aside>
+    
     <header class="header">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-3 ">
+                <div class="col-md-3">
                     <a href="../index.php" class="main-btn text-center w-100">
                         <img src="../assets/images/logo/logo.svg" alt="logo">
                     </a>
@@ -80,7 +71,7 @@ $usuario = $_SESSION['usuario'];
                         <h3>Menu</h3>
                     </button>
                 </div>
-                    <div class="col-lg-5">
+                <div class="col-lg-5">
                     <div class="header-right">
                         <div class="profile-box ml-15">
                             <button class="dropdown-toggle bg-transparent border-0" type="button" id="profile"
@@ -112,12 +103,6 @@ $usuario = $_SESSION['usuario'];
                                 </li>
                                 <li class="divider"></li>
                                 <li>
-                                    <a href="pass_edit.php?id=<?= $usuario['id_usuario'] ?>"> <i
-                                            class="lni lni-cog"></i> Cambiar
-                                        contraseña </a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
                                     <a href="../componentes/logout.php"> <i class="lni lni-exit"></i> Logout </a>
                                 </li>
                             </ul>
@@ -128,7 +113,5 @@ $usuario = $_SESSION['usuario'];
         </div>
     </header>
 
-
     <main class="main">
-
-        <div class="container-fluid"></div>
+        <div class="container-fluid">

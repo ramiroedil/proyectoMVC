@@ -1,26 +1,26 @@
 <?php
-if (isset($_GET['id']) && isset($_GET['act']) && $_GET['act'] == "desactivar") {
-    $cid = $_GET['id'];
-    include("../modelo/clienteClase.php");
+require_once(__DIR__ . '/../modelo/ApiClient.php');
 
-    // Instanciamos la clase con el ID del cliente
-    $cliente = new Clientes($cid, "", "", "");
-    $res = $cliente->inactivo(); 
-    if ($res) {
+if (isset($_GET['id']) && isset($_GET['act']) && $_GET['act'] == "desactivar") {
+    $id = intval($_GET['id']);
+    $api = new ApiClient();
+    
+    $response = $api->patch("/cliente/{$id}/desactivar");
+    
+    if ($response['success']) {
         ?>
         <script type="text/javascript">
-            alert("Cliente registrado con exito");
+            alert("Cliente desactivado con éxito");
             location.href = '../controlador/clienteLista.php';
-            </script>
-            <?php
-            }else{
-                ?>
-                <script type="text/javascript">
-                    
-            alert("Cliente NO registrado con exito");
-            </script>
-            <?php
-            }
-        
+        </script>
+        <?php
+    } else {
+        ?>
+        <script type="text/javascript">
+            alert("Error al desactivar: <?php echo addslashes($response['error']); ?>");
+            location.href = '../controlador/clienteLista.php';
+        </script>
+        <?php
+    }
 }
 ?>

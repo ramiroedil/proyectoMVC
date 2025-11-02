@@ -1,38 +1,40 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+require_once(__DIR__ . '/../modelo/ApiClient.php');
+require_once(__DIR__ . '/../helpers/Session.php');
 
-session_start();
+Session::start();
 
-// Verificar que el usuario tenga permisos de administrador
-if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['tipousuario'] !== 'administrador') {
+// Verificar permisos de administrador
+if (!Session::hasRole('administrador')) {
     ?>
     <script type="text/javascript">
         alert("No tiene permisos para realizar esta acción");
-        location.href = 'ventaLista.php';
+        location.href = '../controlador/ventaLista.php';
     </script>
     <?php
     exit();
 }
 
-$id_venta = $_GET['id'];
+if (!isset($_GET['id'])) {
+    header('Location: ../controlador/ventaLista.php');
+    exit();
+}
 
-include("../modelo/ventaClase.php");
+$id_venta = intval($_GET['id']);
+$api = new ApiClient();
+$response = $api->post("/venta/cancelar/{$id_venta}");
 
-$venta = new Venta($id_venta, "", "", "");
-$r = $venta->eliminarVenta();
-
-if ($r) {
+if ($response['success']) {
     ?>
     <script type="text/javascript">
-        alert("Venta eliminada correctamente. El stock de los productos ha sido restaurado.");
+        alert("Venta cancelada correctamente. El stock ha sido restaurado.");
         location.href = '../controlador/ventaLista.php';
     </script>
     <?php
 } else {
     ?>
     <script type="text/javascript">
-        alert("No se pudo eliminar la venta. Inténtelo nuevamente.");
+        alert("No se pudo cancelar la venta: <?php echo addslashes($response['error']); ?>");
         location.href = '../controlador/ventaLista.php';
     </script>
     <?php

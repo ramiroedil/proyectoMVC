@@ -1,12 +1,13 @@
 <?php
 $usuario = $_GET["usuario"] ?? null;
-if($usuario === "cliente"){
+
+if ($usuario === "cliente") {
     include("usuarioClienteRegistro.php");
-}else if($usuario === "cajero"){
+} elseif ($usuario === "cajero") {
     include("usuarioCajeroRegistro.php");
-}elseif($usuario === "administrador"){
+} elseif ($usuario === "administrador") {
     include("usuarioAdministradorRegistro.php");
-}else{
+} else {
     include_once("../vista/usuarioRegistro.php");
 }
 ?>

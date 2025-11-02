@@ -1,42 +1,52 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-include("../modelo/empleadosClase.php");
-include ("../modelo/cargoClase.php");
-$car=new Cargo("","");
-  $res=$car->lista();
-if(isset($_POST['registrarEmpleado'])){
-  $id_c=$_POST['id_cargo']; 
-  $ci=$_POST['ci'];
-  $no=$_POST['nombre'];
-  $pa=$_POST['paterno'];
-  $ma=$_POST['materno'];
-  $di=$_POST['direccion'];
-  $te=$_POST['telefono'];
-  $fnac=$_POST['fechanacimiento'];
-  $ge=$_POST['genero'];
-  $in=$_POST['intereses'];
-  //cargamos los datos al objeto emp utilizando el constructor de la clase empleado
-  $emp=new Empleado("",$id_c,$ci,$no,$pa,$ma,$di,$te,$fnac,$ge,$in);
-  //procedemos a registrar al empleado del objeto emp a la base de datos mediante la funcion de la clase empleado
-  $r=$emp->grabarEmpleado();
-  if ($r) {//si el registro es verdadero o exitoso
-?>
-<script type="text/javascript">
-alert("Se registro correctamente");
-location.href = 'empleadoLista.php';
-</script>
-<?php
-  }else{//si es falso o ocurrio un error
-    echo "<script>alert('Error: " . mysqli_error($conexion) . "');</script>";
-    ?>
-<script type="text/javascript">
-alert("Registro Incorrecto, revise sus datos por favor");
-</script>
-<?php
-  }
-  
-}
-include ("../vista/empleadoRegistro.php");
+require_once(__DIR__ . '/../modelo/ApiClient.php');
 
+$api = new ApiClient();
+
+// Obtener lista de cargos
+$response_cargos = $api->get('/cargo');
+$cargos = $response_cargos['success'] ? $response_cargos['data'] : [];
+
+if (isset($_POST['registrarEmpleado'])) {
+    $id_cargo = intval($_POST['id_cargo']);
+    $ci = trim($_POST['ci']);
+    $nombre = trim($_POST['nombre']);
+    $paterno = trim($_POST['paterno']);
+    $materno = trim($_POST['materno']);
+    $direccion = trim($_POST['direccion']);
+    $telefono = trim($_POST['telefono']);
+    $fechanacimiento = $_POST['fechanacimiento'];
+    $genero = $_POST['genero'];
+    $intereses = trim($_POST['intereses']);
+
+    $response = $api->post('/empleado', [
+        'cargo_id' => $id_cargo,
+        'ci' => $ci,
+        'nombre' => $nombre,
+        'paterno' => $paterno,
+        'materno' => $materno,
+        'direccion' => $direccion,
+        'telefono' => $telefono,
+        'fecha_nacimiento' => $fechanacimiento,
+        'genero' => $genero,
+        'intereses' => $intereses
+    ]);
+
+    if ($response['success']) {
+        ?>
+        <script type="text/javascript">
+            alert("Empleado registrado con éxito");
+            location.href = '../controlador/empleadoLista.php';
+        </script>
+        <?php
+    } else {
+        ?>
+        <script type="text/javascript">
+            alert("Error al registrar: <?php echo addslashes($response['error']); ?>");
+        </script>
+        <?php
+    }
+}
+
+include("../vista/empleadoRegistro.php");
 ?>

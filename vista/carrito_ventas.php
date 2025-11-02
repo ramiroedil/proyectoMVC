@@ -1,46 +1,33 @@
 <?php
-session_start();
+require_once(__DIR__ . '/../helpers/Session.php');
+Session::start();
 
 // PROCESAR SOLO LA ACCIÓN DE ELIMINAR
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'eliminar') {
-    
     if (isset($_POST['indice'])) {
         $indice = intval($_POST['indice']);
+        $carrito = Session::get('carrito_ventas1', []);
         
-        // Verificar que el índice existe en el carrito
-        if (isset($_SESSION['carrito_ventas1'][$indice])) {
-            // Obtener el nombre del producto antes de eliminarlo
-            $nombre_producto = $_SESSION['carrito_ventas1'][$indice]['nombre'];
-            
-            // Eliminar el producto del carrito
-            unset($_SESSION['carrito_ventas1'][$indice]);
-            
-            // Reindexar el array para evitar problemas con índices
-            $_SESSION['carrito_ventas1'] = array_values($_SESSION['carrito_ventas1']);
-            
-            // Mensaje de confirmación
-            $_SESSION['mensaje_carrito'] = "Producto '$nombre_producto' eliminado del carrito";
-        } else {
-            $_SESSION['mensaje_carrito'] = "Error: Producto no encontrado en el carrito";
+        if (isset($carrito[$indice])) {
+            $nombre_producto = $carrito[$indice]['nombre'];
+            unset($carrito[$indice]);
+            $carrito = array_values($carrito);
+            Session::set('carrito_ventas1', $carrito);
+            Session::set('mensaje_carrito', "Producto '$nombre_producto' eliminado del carrito");
         }
-    } else {
-        $_SESSION['mensaje_carrito'] = "Error: No se especificó qué producto eliminar";
     }
     
-    // Redirigir para refrescar la página
     header("Location: " . $_SERVER['PHP_SELF']);
     exit();
 }
 
 // Función para calcular el total del carrito
-function calcularTotal()
-{
+function calcularTotal() {
     $total = 0;
-    if (isset($_SESSION['carrito_ventas1']) && is_array($_SESSION['carrito_ventas1'])) {
-        foreach ($_SESSION['carrito_ventas1'] as $item) {
-            if (isset($item['subtotal'])) {
-                $total += floatval($item['subtotal']);
-            }
+    $carrito = Session::get('carrito_ventas1', []);
+    foreach ($carrito as $item) {
+        if (isset($item['subtotal'])) {
+            $total += floatval($item['subtotal']);
         }
     }
     return $total;
@@ -49,8 +36,19 @@ function calcularTotal()
 include("../componentes/header.php");
 ?>
 
-<!-- SweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<?php if (Session::has('mensaje_carrito')): ?>
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: '<?php echo addslashes(Session::get("mensaje_carrito")); ?>',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    </script>
+    <?php Session::delete('mensaje_carrito'); ?>
+<?php endif; ?>
 
 <div class="container-fluid">
     <div class="row">
@@ -62,7 +60,10 @@ include("../componentes/header.php");
                 </a>
             </div>
 
-            <?php if (isset($_SESSION['carrito_ventas1']) && !empty($_SESSION['carrito_ventas1'])): ?>
+            <?php 
+            $carrito = Session::get('carrito_ventas1', []);
+            if (!empty($carrito)): 
+            ?>
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
                         <thead class="table-dark">
@@ -76,13 +77,12 @@ include("../componentes/header.php");
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($_SESSION['carrito_ventas1'] as $indice => $item): ?>
+                            <?php foreach ($carrito as $indice => $item): ?>
                                 <tr>
                                     <td style="width: 100px;">
                                         <?php if (!empty($item['imagen'])): ?>
                                             <img src="../controlador/imagenes/<?php echo htmlspecialchars($item['imagen']); ?>"
-                                                class="img-thumbnail" alt="<?php echo htmlspecialchars($item['nombre']); ?>"
-                                                style="width: 100px; height: 100px;">
+                                                class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
                                         <?php else: ?>
                                             <span class="text-muted">Sin imagen</span>
                                         <?php endif; ?>
@@ -93,7 +93,7 @@ include("../componentes/header.php");
                                         <small class="text-muted"><?php echo htmlspecialchars($item['descripcion']); ?></small>
                                     </td>
                                     <td>Bs <?php echo number_format($item['precio'], 2); ?></td>
-                                    <td style="width: 200px;">
+                                    <td>
                                         <span class="fw-bold"><?php echo $item['cantidad']; ?></span>
                                     </td>
                                     <td>Bs <?php echo number_format($item['subtotal'], 2); ?></td>
@@ -102,7 +102,7 @@ include("../componentes/header.php");
                                             <input type="hidden" name="accion" value="eliminar">
                                             <input type="hidden" name="indice" value="<?php echo $indice; ?>">
                                             <button type="submit" class="btn btn-danger btn-sm" 
-                                                    onclick="return confirm('¿Estás seguro de eliminar este producto del carrito?')">
+                                                    onclick="return confirm('¿Estás seguro de eliminar este producto?')">
                                                 <i class="fas fa-trash"></i> Eliminar
                                             </button>
                                         </form>
@@ -130,9 +130,10 @@ include("../componentes/header.php");
                 </div>
             <?php else: ?>
                 <div class="alert alert-info text-center">
-                    <i class="fas fa-info-circle"></i> El carrito está vacío
-                    <br><br>
-                    <a href="../controlador/controladorVenta.php" class="btn btn-primary">
+                    <i class="fas fa-info-circle fa-3x mb-3"></i>
+                    <h4>El carrito está vacío</h4>
+                    <p>Agrega productos para realizar una venta</p>
+                    <a href="../controlador/controladorVenta.php" class="btn btn-primary mt-3">
                         <i class="fas fa-shopping-bag"></i> Ir a Comprar
                     </a>
                 </div>

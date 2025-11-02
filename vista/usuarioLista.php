@@ -1,96 +1,96 @@
-<?php
-include("../componentes/header.php");
-?>
-<div class="row justify-content-center">
-    <div class="col-md-2">
-        <div class="card shadow">
-            <a href="../controlador/usuarioRegistro.php" class="btn btn-success btn-sm">
-                <i class="bi bi-pencil-fill"></i> Nuevo Usuario
-            </a>
-        </div>
-    </div>
-    <!-- <div class="col-md-2">
-        <div class="card shadow">
-            <a href="../controlador/cargoBusqueda.php" class="btn btn-warning btn-sm">
-                <i class="bi bi-pencil-fill"></i> Buscar Usuario
-            </a>
-        </div>
-    </div>
+<?php include("../componentes/header.php"); ?>
 
-    <div class="col-md-2"> 
-        <div class="card shadow">
-            <a href="cargo_pdf.php" target="_blank" class="btn btn-danger"> Ver PDF</a>
-        </div>
-    </div> -->
+<div class="row justify-content-center mb-3">
+    <div class="col-md-2">
+        <a href="../controlador/usuarioRegistro.php" class="btn btn-success btn-sm w-100">
+            <i class="fas fa-user-plus"></i> Nuevo Usuario
+        </a>
+    </div>
 </div>
+
 <div class="card shadow">
     <div class="card-header text-center bg-primary text-white">
         <h3>Lista de Usuarios</h3>
     </div>
     <div class="card-body">
-        <table class="table table-striped table-bordered text-center" id="tblData">
-            <thead class="table-dark">
-                <tr>
-                    <th scope="col">N°</th>
-                    <th scope="col">Usuario</th>
-                    <th scope="col">Tipo Usuario</th>
-                    <th scope="col">Estado</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Apellido Paterno</th>
-                    <th scope="col">Apellido Materrno</th>
-                    <th scope="col">ci</th>
-                    <th scope="col">email</th>
-                    <th scope="col" colspan="2">Operaciones</th>
-                </tr>
-            </thead>
-            <?php
-            $id = 1;
-            ?>
-            <tbody>
-                <?php while ($r = mysqli_fetch_array($resul)) { ?>
+        <?php if (!empty($usuarios)): ?>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered text-center" id="tblData">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>N°</th>
+                            <th>Usuario</th>
+                            <th>Nombre Completo</th>
+                            <th>CI</th>
+                            <th>Email</th>
+                            <th>Cargo</th>
+                            <th>Estado</th>
+                            <th colspan="2">Operaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                        $id = 1;
+                        foreach ($usuarios as $usuario): 
+                        ?>
+                            <tr>
+                                <td><?= $id++; ?></td>
+                                <td><?= htmlspecialchars($usuario['usuario']); ?></td>
+                                <td><?= htmlspecialchars($usuario['nombre'] . ' ' . $usuario['apellido_paterno'] . ' ' . $usuario['apellido_materno']); ?></td>
+                                <td><?= htmlspecialchars($usuario['ci']); ?></td>
+                                <td><?= htmlspecialchars($usuario['email']); ?></td>
+                                <td>
+                                    <?php
+                                    $badge_class = 'bg-secondary'; // color por defecto
+                                    $cargo_display = 'Sin cargo';
 
-                    <tr>
-                        <td><span class="badge bg-info text-primary px-3 rounded"><?= $id++ ?></span></td>
-                        <td><?php echo ($r["nombreusuario"]); ?></td>
-                        <td><?php echo ($r["tipousuario"]); ?></td>
-                        <td><?php echo ($r["estado"]); ?></td>
-                        <td><?php echo ($r["nombre"]); ?></td>
-                        <td><?php echo ($r["paterno"]); ?></td>
-                        <td><?php echo ($r["materno"]); ?></td>
-                        <td><?php echo ($r["ci"]); ?></td>
-                        <td><?php echo ($r["email"]); ?></td>
-                        <td>
-                            <a href='../controlador/usuarioEditar.php?id=<?php echo $r['id_usuario']; ?>'
-                                class="btn btn-success btn-sm">
-                                <i class="bi bi-pencil-fill"></i> Editar
-                            </a>
-                        </td>
-                        <td>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" data-user-id="<?= $r['id_usuario'] ?>"
-                                    onchange="actualizarEstado(this)" <?php if ($r['estado'] == 'activo')
-                                        echo 'checked'; ?>>
-                                <label class="form-check-label" id="state-label-<?= $r['id_usuario'] ?>">
-                                    <?php echo ucfirst($r['estado']); ?>
-                                </label>
-                            </div>
-
-                            <!-- <a href='../controlador/usuarioEliminar.php?id=<?php echo $r['id_usuario']; ?>'
-                                class="btn btn-danger btn-sm">
-                                <i class="bi bi-trash-fill"></i> Eliminar
-                            </a> -->
-                        </td>
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
+                                    // Verificamos si el usuario tiene un cargo
+                                    if (isset($usuario['empleado']['cargo']['nombre'])) {
+                                        $cargo = strtolower($usuario['empleado']['cargo']['nombre']);
+                                        if ($cargo == 'administrador') $badge_class = 'bg-danger';
+                                        elseif ($cargo == 'cajero') $badge_class = 'bg-warning';
+                                        elseif ($cargo == 'cliente') $badge_class = 'bg-info';
+                                        $cargo_display = ucfirst($usuario['empleado']['cargo']['nombre']);
+                                    }
+                                    ?>
+                                    <span class="badge <?= $badge_class ?>"><?= $cargo_display; ?></span>
+                                </td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" 
+                                               data-user-id="<?= $usuario['id'] ?>"
+                                               onchange="actualizarEstado(this)" 
+                                               <?= ($usuario['estado'] == 'activo') ? 'checked' : ''; ?>>
+                                        <label class="form-check-label" id="state-label-<?= $usuario['id'] ?>">
+                                            <?= ucfirst($usuario['estado']); ?>
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="../controlador/usuarioEditar.php?id=<?= $usuario['id']; ?>" 
+                                       class="btn btn-success btn-sm">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="../controlador/usuarioEliminar.php?id=<?= $usuario['id']; ?>" 
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('¿Está seguro de eliminar este usuario?')">
+                                        <i class="fas fa-trash"></i> Eliminar
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php else: ?>
+            <div class="alert alert-info">No hay usuarios registrados</div>
+        <?php endif; ?>
     </div>
 </div>
 
-</main>
-<?php
-include("../componentes/footer.php");
-?><script>
+<script>
 function actualizarEstado(checkbox) {
     const userId = checkbox.getAttribute("data-user-id");
     const nuevoEstado = checkbox.checked ? "activo" : "inactivo";
@@ -105,11 +105,11 @@ function actualizarEstado(checkbox) {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-
-            document.getElementById("state-label-" + userId).textContent = nuevoEstado.charAt(0).toUpperCase() + nuevoEstado.slice(1);
+            document.getElementById("state-label-" + userId).textContent = 
+                nuevoEstado.charAt(0).toUpperCase() + nuevoEstado.slice(1);
         } else {
             alert("Error: " + data.error);
-            checkbox.checked = !checkbox.checked; // Revertir estado
+            checkbox.checked = !checkbox.checked;
         }
     })
     .catch(err => {
@@ -118,3 +118,5 @@ function actualizarEstado(checkbox) {
     });
 }
 </script>
+
+<?php include("../componentes/footer.php"); ?>

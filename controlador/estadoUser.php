@@ -1,18 +1,21 @@
 <?php
-include("../modelo/usuario.php");
+require_once(__DIR__ . '/../modelo/ApiClient.php');
+
+header('Content-Type: application/json');
 
 if (isset($_POST['id_usuario']) && isset($_POST['estado'])) {
-    $id = $_POST['id_usuario'];
+    $id = intval($_POST['id_usuario']);
     $nuevoEstado = $_POST['estado'];
-    $usuario = new Usuario("","","","","","","","","","",
-    $id,
-    $nuevoEstado);
-    $resultado = $usuario->actualizarEstado($id, $nuevoEstado);
-
-    if ($resultado) {
+    
+    $api = new ApiClient();
+    $response = $api->patch("/usuario/{$id}/estado", [
+        'estado' => $nuevoEstado
+    ]);
+    
+    if ($response['success']) {
         echo json_encode(["success" => true, "estado" => $nuevoEstado]);
     } else {
-        echo json_encode(["success" => false, "error" => "No se pudo actualizar."]);
+        echo json_encode(["success" => false, "error" => $response['error']]);
     }
 } else {
     echo json_encode(["success" => false, "error" => "Datos incompletos."]);

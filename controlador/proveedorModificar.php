@@ -1,47 +1,66 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+require_once(__DIR__ . '/../modelo/ApiClient.php');
 
-if (isset($_GET['id'])) {
-  $id = $_GET['id'];
-  include("../modelo/proveedorClase.php");
-  if (isset($_GET['modificarProveedor'])) {
-    $em = $_GET['empresa'];
-    $co = $_GET['contacto'];
-    $ma = $_GET['mail'];
-    $te = $_GET['telefono'];
-    $di = $_GET['direccion'];
+$api = new ApiClient();
+
+if (!isset($_GET['id'])) {
+    header('Location: ../controlador/proveedorLista.php');
+    exit();
+}
+
+$id = intval($_GET['id']);
+
+// Procesar modificación
+if (isset($_GET['modificarProveedor'])) {
+    $empresa = trim($_GET['empresa']);
+    $contacto = trim($_GET['contacto']);
+    $mail = trim($_GET['mail']);
+    $telefono = trim($_GET['telefono']);
+    $direccion = trim($_GET['direccion']);
+    
+    $files = [];
     if (isset($_FILES['logo']) && $_FILES['logo']['error'] === 0) {
-      //$foto = $_FILES['foto']['name'];
-      $lo=$_FILES['logo']['name'];
-      $origen = $_FILES['logo']['tmp_name'];
-    } else {
-      echo "No se ha seleccionado ninguna imagen";
+        $files['logo'] = $_FILES['logo'];
     }
-    $pr = new Proveedor($id, $em, $co, $ma, $te, $di, "$lo");
-    $re = $pr->ediProveedor();
-    if ($re) {
-      @copy($origen,'imagenes/'.$lo);
-?>
-<script type="text/javascript">
-alert("Se modifico correctamente");
-location.href = '../controlador/proveedorLista.php';
-</script>
-<?php
+    
+    $data = [
+        'empresa' => $empresa,
+        'contacto' => $contacto,
+        'mail' => $mail,
+        'telefono' => $telefono,
+        'direccion' => $direccion
+    ];
+    
+    $response = $api->post("/proveedor/{$id}", $data, $files); // Usar POST con archivos
+    
+    if ($response['success']) {
+        ?>
+        <script type="text/javascript">
+            alert("Proveedor modificado correctamente");
+            location.href = '../controlador/proveedorLista.php';
+        </script>
+        <?php
     } else {
-    ?>
-<script type="text/javascript">
-alert("Modificacion incorrecta");
-</script>
-<?php
+        ?>
+        <script type="text/javascript">
+            alert("Error al modificar: <?php echo addslashes($response['error']); ?>");
+        </script>
+        <?php
     }
-  } else {
-    $pro = new Proveedor($id, "", "", "", "", "", "");
-    $r1 = $pro->obtenerProveedor();
-    $r = mysqli_fetch_array($r1);
+}
+
+// Obtener datos del proveedor
+$response_proveedor = $api->get("/proveedor/{$id}");
+
+if ($response_proveedor['success']) {
+    $r = $response_proveedor['data'];
     include("../vista/proveedorModificar.php");
-  }
 } else {
-  echo "Error";
+    ?>
+    <script type="text/javascript">
+        alert("Proveedor no encontrado");
+        location.href = '../controlador/proveedorLista.php';
+    </script>
+    <?php
 }
 ?>

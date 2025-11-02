@@ -1,45 +1,71 @@
-<?php
-include("../componentes/header.php");
-?>
+<?php include("../componentes/header.php"); ?>
+
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <h2 class="text-center mb-4">Seleccione el Tipo de Usuario a Registrar</h2>
+    </div>
+</div>
+
 <div class="row justify-content-center">
     <div class="col-md-4">
-        <a href="../controlador/usuarioRegistro.php?usuario=administrador" class="text-decoration-none text-dark">
-            <div class="card text-center">
-                <div class="card-header">
-                    <img src="../imagenes/administrador.jpg" alt="Administrador" class="img-fluid rounded">
+        <a href="../controlador/usuarioRegistro.php?usuario=administrador" class="text-decoration-none">
+            <div class="card text-center hover-shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5><i class="fas fa-user-shield fa-3x mb-2"></i></h5>
                 </div>
                 <div class="card-body">
-                    <h5><i class="bi bi-pencil-fill"></i> Administrador</h5>
+                    <h4 class="text-danger">Administrador</h4>
+                    <p class="text-muted">Acceso completo al sistema</p>
                 </div>
             </div>
         </a>
     </div>
+    
     <div class="col-md-4">
-        <a href="../controlador/usuarioRegistro.php?usuario=cajero" class="text-decoration-none text-dark">
-            <div class="card text-center">
-                <div class="card-header">
-                    <img src="../imagenes/cajero.jpg" alt="Cajero" class="img-fluid rounded">
+        <a href="../controlador/usuarioRegistro.php?usuario=cajero" class="text-decoration-none">
+            <div class="card text-center hover-shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5><i class="fas fa-cash-register fa-3x mb-2"></i></h5>
                 </div>
                 <div class="card-body">
-                    <h5><i class="bi bi-pencil-fill"></i> Cajero</h5>
+                    <h4 class="text-warning">Cajero</h4>
+                    <p class="text-muted">Gestión de ventas</p>
                 </div>
             </div>
         </a>
     </div>
+    
     <div class="col-md-4">
-        <a href="../controlador/usuarioRegistro.php?usuario=cliente" class="text-decoration-none text-dark">
-            <div class="card text-center">
-                <div class="card-header">
-                    <img src="../imagenes/cliente.jpg" alt="Cliente" class="img-fluid rounded">
+        <a href="../controlador/usuarioRegistro.php?usuario=cliente" class="text-decoration-none">
+            <div class="card text-center hover-shadow">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-user fa-3x mb-2"></i></h5>
                 </div>
                 <div class="card-body">
-                    <h5><i class="bi bi-pencil-fill"></i> Cliente</h5>
+                    <h4 class="text-info">Cliente</h4>
+                    <p class="text-muted">Usuario estándar</p>
                 </div>
             </div>
         </a>
     </div>
 </div>
-<?php
-include("../componentes/footer.php");
-?>
 
+<div class="row justify-content-center mt-4">
+    <div class="col-md-4 text-center">
+        <a href="../controlador/usuarioLista.php" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver a Lista de Usuarios
+        </a>
+    </div>
+</div>
+
+<style>
+.hover-shadow {
+    transition: all 0.3s ease;
+}
+.hover-shadow:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+</style>
+
+<?php include("../componentes/footer.php"); ?>

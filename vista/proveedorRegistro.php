@@ -1,76 +1,75 @@
-<?php
-include("../componentes/header.php");
-?>
+<?php include("../componentes/header.php"); ?>
+
 <div class="col-xxl">
-            <div class="card mb-4">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <h5 class="mb-0">Registro de Proveedor</h5>
-                    <small class="text-muted float-end">Registrando un nuevo proveedor</small>
-                </div>
-                <div class="card-body">
-                    <!-- la licenciada no tenia el action pero no funciona si lo quito aunque capaz y no es necesario por que este formulario tecnicamente essta en el controlador -->
-                    <form method="post" action="../controlador/proveedorRegistrar.php" enctype="multipart/form-data">
-                        </div>
-                        <br>
-                        <div class="row sm-2">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">EMPRESA</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" name="empresa" />
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row sm-2">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">contacto</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" name="contacto" />
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row sm-2">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">MAIL</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control"name="mail" />
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row sm-2">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">TELEFONO</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" name="telefono" />
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row sm-2">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">Direccion</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" name="direccion" />
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row sm-2">
-                            <label class="col-sm-2 col-form-label" for="basic-default-name">LOGO</label>
-                            <div class="col-sm-10">
-                            <input type="file" name="logo">
-                            </div>
-                        </div>
-                        <div class="row justify-content-end">
-                            <div class="col md-2">
-                            </div>
-                            <div class="col-md-6"></div>
-                            <div class="col-md-2">
-                                <!-- y el boton tipo submit con nombre registrarEmpleado que esta al inicio del controlador -->
-                                <button type="submit" class="btn btn-primary" name="registrarProveedor"
-                                    value="Registrar">Registrar</button>
-                            </div>
-                            <div class="col-md-2">
-                                <a href="../controlador/ProveedorLista.php" class="btn btn-danger">Cancelar</a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Registro de Proveedor</h5>
         </div>
-    </main>
-    <?php
-include("../componentes/footer.php");
-?>
+        <div class="card-body">
+            <form method="post" action="../controlador/proveedorRegistrar.php" enctype="multipart/form-data">
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Empresa</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="empresa" 
+                               placeholder="Nombre de la empresa" required />
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Contacto</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="contacto" 
+                               placeholder="Nombre del contacto" required />
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Email</label>
+                    <div class="col-sm-10">
+                        <input type="email" class="form-control" name="mail" 
+                               placeholder="correo@ejemplo.com" required />
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Teléfono</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="telefono" 
+                               placeholder="Número de teléfono" />
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Dirección</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="direccion" 
+                               placeholder="Dirección completa" />
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Logo</label>
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control" name="logo" accept="image/*" />
+                        <small class="text-muted">Formatos permitidos: JPG, PNG, GIF</small>
+                    </div>
+                </div>
+                
+                <div class="row justify-content-end">
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary" name="registrarProveedor">
+                            <i class="fas fa-save"></i> Registrar
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="../controlador/proveedorLista.php" class="btn btn-danger">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<?php include("../componentes/footer.php"); ?>

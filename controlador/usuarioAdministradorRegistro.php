@@ -1,47 +1,47 @@
 <?php
-ob_start();
-include_once("../modelo/usuario.php");
-include("../vista/usuarioAdmRegistro.php");
-
-
-if($_SERVER['REQUEST_METHOD']==='POST'){
-    
-    $nombreUsuario = $_POST['usuario'];
-    if (Usuario::existeNombreUsuario($nombreUsuario)) {
-        echo "<script>alert('El nombre de usuario ya está en uso. Elige otro.'); window.history.back();</script>";
-        exit;
-    }
-
-    $nombre = $_POST['nombre'];
-    $apellidoPaterno = $_POST['paterno'];
-    $apellidoMaterno = $_POST['materno'];
-    $ci = $_POST['ci'];
-    $fechaNacimiento = $_POST['fechanacimiento'];
+require_once(__DIR__ . '/../modelo/ApiClient.php');
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre = trim($_POST['nombre']);
+    $paterno = trim($_POST['paterno']);
+    $materno = trim($_POST['materno']);
+    $ci = trim($_POST['ci']);
+    $username = trim($_POST['usuario']);
     $password = $_POST['pasword'];
-    $email = $_POST['email'];
-    $contraseña = password_hash($password, PASSWORD_DEFAULT);
-
-    $usuario = new Usuario(
-        "",
-        $nombre,
-        $apellidoPaterno,
-        $apellidoMaterno,
-        $ci,
-        $nombreUsuario,
-        $contraseña,
-        $fechaNacimiento,
-        "administrador",
-        $email,
-        "",
-        "activo"
-    );
-
-    $resultado = $usuario->registrarAdministrador();
-
-    if ($resultado) {
-        header("Location: ../controlador/usuarioLista.php");
+    $fecha_nacimiento = $_POST['fechanacimiento'];
+    $email = trim($_POST['email']);
+    $cargo_id = $_POST['cargo'];  // Cargo seleccionado
+    $estado_laboral = $_POST['estadoLaboral'];  // Estado laboral seleccionado
+    
+    $api = new ApiClient();
+    $response = $api->post('/usuario/register', [
+        'usuario' => $username,
+        'password' => $password,
+        'nombre' => $nombre,
+        'apellido_paterno' => $paterno,
+        'apellido_materno' => $materno,
+        'ci' => $ci,
+        'fecha_nacimiento' => $fecha_nacimiento,
+        'email' => $email,
+        'id_cargo' => $cargo_id,  // Cargo ID
+        'estadoLaboral' => $estado_laboral  // Estado laboral
+    ]);
+    
+    if ($response['success']) {
+        ?>
+        <script type="text/javascript">
+            alert("Administrador registrado correctamente");
+            location.href = '../controlador/usuarioLista.php';
+        </script>
+        <?php
+        exit();
+    } else {
+        ?>
+        <script type="text/javascript">
+            alert("Error al registrar: <?php echo addslashes($response['error']); ?>");
+        </script>
+        <?php
     }
 }
 
-ob_end_flush();
+include("../vista/usuarioAdmRegistro.php");
 ?>

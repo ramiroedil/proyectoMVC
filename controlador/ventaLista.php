@@ -1,35 +1,50 @@
 <?php
-include("../modelo/ventaClase.php");
+require_once(__DIR__ . '/../modelo/ApiClient.php');
 
-// Crear instancia de Venta para listar
-$venta = new Venta("", "", "", "");
+$api = new ApiClient();
 
 // Procesar filtros si existen
 $filtro_aplicado = false;
-$ventas_resultado = null;
+$ventas = [];
 
 if ($_POST) {
     if (isset($_POST['filtrar_fecha']) && !empty($_POST['fecha_inicio']) && !empty($_POST['fecha_fin'])) {
         $fecha_inicio = $_POST['fecha_inicio'];
         $fecha_fin = $_POST['fecha_fin'];
-        $ventas_resultado = $venta->buscarVentasPorFecha($fecha_inicio, $fecha_fin);
+        
+        $response = $api->get('/venta/reporte', [
+            'inicio' => $fecha_inicio,
+            'fin' => $fecha_fin
+        ]);
+        
+        if ($response['success']) {
+            $ventas = $response['data'];
+        }
         $filtro_aplicado = true;
     } elseif (isset($_POST['filtrar_cliente']) && !empty($_POST['id_cliente'])) {
-        $id_cliente = $_POST['id_cliente'];
-        $ventas_resultado = $venta->buscarVentasPorCliente($id_cliente);
+        $id_cliente = intval($_POST['id_cliente']);
+        
+        $response = $api->get("/venta/cliente/{$id_cliente}");
+        
+        if ($response['success']) {
+            $ventas = $response['data'];
+        }
         $filtro_aplicado = true;
     }
 }
 
 // Si no hay filtro aplicado, mostrar todas las ventas
 if (!$filtro_aplicado) {
-    $ventas_resultado = $venta->listarVentas();
+    $response = $api->get('/venta');
+    
+    if ($response['success']) {
+        $ventas = $response['data'];
+    }
 }
 
 // Obtener lista de clientes para el filtro
-include_once("../modelo/clienteClase.php");
-$cliente_obj = new clientes("", "", "", "");
-$clientes_lista = $cliente_obj->lista();
+$response_clientes = $api->get('/cliente/active');
+$clientes_lista = $response_clientes['success'] ? $response_clientes['data'] : [];
 
 include("../vista/ventaLista.php");
 ?>
