@@ -185,7 +185,7 @@ class ApiClient
         // Unauthorized (401)
         if ($http_code == 401) {
             Session::destroy();
-            header('Location: ../index.php?sw=2');
+            header('Location: ../inicio_sesion.php?sw=2');
             exit();
         }
 

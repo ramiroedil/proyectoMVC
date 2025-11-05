@@ -7,7 +7,7 @@ if (isset($_POST['user']) && isset($_POST['pasw'])) {
     $password = trim($_POST['pasw']);
 
     if (empty($username) || empty($password)) {
-        header("Location: ../index.php?sw=4");
+        header("Location: ../inicio_sesion.php?sw=4");
         exit();
     }
 
@@ -39,11 +39,11 @@ if (isset($_POST['user']) && isset($_POST['pasw'])) {
     exit();
 }
  else {
-        header("Location: ../index.php?sw=1");
+        header("Location: ../inicio_sesion.php?sw=1");
         exit();
     }
 } else {
-    header("Location: ../index.php?sw=4");
+    header("Location: ../inicio_sesion.php?sw=4");
     exit();
 }
 ?>
