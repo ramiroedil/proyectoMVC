@@ -6,7 +6,8 @@ if (!Session::isAuthenticated()) {
     exit();
 }
 
-$usuario = Session::getUser();
+// Cambiar nombre de variable para evitar conflictos
+$usuarioActual = Session::getUser();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -34,7 +35,7 @@ $usuario = Session::getUser();
         </div>
         <div class="offcanvas-body">
             <div class="btn-group-vertical mb-3 d-flex">
-                <?php if ($usuario['tipousuario'] == 'administrador'): ?>
+                <?php if ($usuarioActual['tipousuario'] == 'empleado'): ?>
                     <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
                         href="../controlador/usuarioLista.php">USUARIOS</a>
                     <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
@@ -82,8 +83,8 @@ $usuario = Session::getUser();
                                             <img src="../imagenes/administrador.jpg" alt="" />
                                         </div>
                                         <div>
-                                            <h6 class="fw-500"><?= $usuario['nombre'] ?></h6>
-                                            <p><?= $usuario['tipousuario'] ?></p>
+                                            <h6 class="fw-500"><?= $usuarioActual['nombre'] ?></h6>
+                                            <p><?= $usuarioActual['tipousuario'] ?></p>
                                         </div>
                                     </div>
                                 </div>
@@ -95,9 +96,9 @@ $usuario = Session::getUser();
                                             <img src="../imagenes/administrador.jpg" alt="image">
                                         </div>
                                         <div class="content">
-                                            <h4 class="text-sm"><?= $usuario['nombreusuario'] ?></h4>
+                                            <h4 class="text-sm"><?= $usuarioActual['nombreusuario'] ?></h4>
                                             <a class="text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white text-xs"
-                                                href="#"><?= $usuario['email'] ?></a>
+                                                href="#"><?= $usuarioActual['email'] ?></a>
                                         </div>
                                     </div>
                                 </li>

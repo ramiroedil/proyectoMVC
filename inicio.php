@@ -1,10 +1,13 @@
 <?php
-session_start();
-if (!isset($_SESSION['usuario']) || !isset($_SESSION['token'])) {
-    header('Location: index.php?sw=2');
+require_once(__DIR__ . '/helpers/Session.php');
+
+if (!Session::isAuthenticated()) {
+    header('Location: ../index.php?sw=2');
     exit();
 }
-$usuario = $_SESSION['usuario'];
+
+// Cambiar nombre de variable para evitar conflictos
+$usuarioActual = Session::getUser();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,67 +20,56 @@ $usuario = $_SESSION['usuario'];
     <link rel="stylesheet" href="assets/css/lineicons.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="assets/css/fullcalendar.css" />
-    <link rel="stylesheet" href="assets/css/fullcalendar.css" />
     <link rel="stylesheet" href="assets/css/main.css" />
     <link rel="stylesheet" href="vendor/fontawesome-free-5.15.4-web/css/all.css">
 </head>
 
-<body>
+<body class="d-flex flex-column" style="height: 100vh">
     <aside class="offcanvas offcanvas-start" id="menuLateral">
         <div class="offcanvas-header text-center w-100">
             <div class="offcanvas-title w-100">
-                <a href="inicio.php">
+                <a href="../inicio.php">
                     <img src="assets/images/logo/logo.svg" alt="logo">
                 </a>
             </div>
         </div>
         <div class="offcanvas-body">
             <div class="btn-group-vertical mb-3 d-flex">
-                <?php
-                if ($usuario['tipousuario'] == 'administrador') {
-                    ?>
+                <?php if ($usuarioActual['tipousuario'] == 'empleado'): ?>
                     <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
-                        href="controlador/usuarioLista.php">USUARIOS
-                    </a>
+                        href="controlador/usuarioLista.php">USUARIOS</a>
                     <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
-                        href="controlador/ventaLista.php">LISTA DE VENTAS
-                    </a>
-                    <?php
-                }
-                ?>
+                        href="controlador/ventaLista.php">LISTA DE VENTAS</a>
+                <?php endif; ?>
             </div>
-            <div class="btn-group-vertical mb-3 d-flex"><a type="button"
-                    class="btn btn-white btn-outline-secondary text-primary fw-bold"
+            <div class="btn-group-vertical mb-3 d-flex">
+                <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
                     href="controlador/cargoLista.php">CARGO</a>
                 <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
                     href="controlador/clienteLista.php">CLIENTE</a>
                 <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
                     href="controlador/empleadoLista.php">EMPLEADOS</a>
                 <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
-                    href="controlador/productoLista.php">PRODUCTO
-                </a>
+                    href="controlador/productoLista.php">PRODUCTO</a>
                 <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
-                    href="controlador/proveedorLista.php">PROVEEDOR
-                </a>
+                    href="controlador/proveedorLista.php">PROVEEDOR</a>
                 <a type="button" class="btn btn-white btn-outline-secondary text-primary fw-bold"
-                    href="controlador/controladorVenta.php">VENTAS
-                </a>
+                    href="controlador/controladorVenta.php">VENTAS</a>
             </div>
         </div>
     </aside>
+    
     <header class="header">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-3 ">
-                    <a href="inicio.php" class="main-btn text-center w-100">
+                <div class="col-md-3">
+                    <a href="index.php" class="main-btn text-center w-100">
                         <img src="assets/images/logo/logo.svg" alt="logo">
                     </a>
                 </div>
                 <div class="col-lg-3">
-                    <button data-bs-toggle="offcanvas" data-bs-target="#menuLateral" class="">
-                        <i class="btn btn-primary main-btn">
-                            <h3>Menu</h3>
-                        </i>
+                    <button data-bs-toggle="offcanvas" data-bs-target="#menuLateral" class="btn btn-primary rounded">
+                        <h3>Menu</h3>
                     </button>
                 </div>
                 <div class="col-lg-5">
@@ -91,8 +83,8 @@ $usuario = $_SESSION['usuario'];
                                             <img src="imagenes/administrador.jpg" alt="" />
                                         </div>
                                         <div>
-                                            <h6 class="fw-500"><?= $usuario['nombre'] ?></h6>
-                                            <p><?= $usuario['tipousuario'] ?></p>
+                                            <h6 class="fw-500"><?= $usuarioActual['nombre'] ?></h6>
+                                            <p><?= $usuarioActual['tipousuario'] ?></p>
                                         </div>
                                     </div>
                                 </div>
@@ -104,17 +96,11 @@ $usuario = $_SESSION['usuario'];
                                             <img src="imagenes/administrador.jpg" alt="image">
                                         </div>
                                         <div class="content">
-                                            <h4 class="text-sm"><?= $usuario['nombreusuario'] ?></h4>
+                                            <h4 class="text-sm"><?= $usuarioActual['nombreusuario'] ?></h4>
                                             <a class="text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white text-xs"
-                                                href="#"><?= $usuario['email'] ?></a>
+                                                href="#"><?= $usuarioActual['email'] ?></a>
                                         </div>
                                     </div>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="vista/pass_edit.php?id=<?= $usuario['id_usuario'] ?>"> <i
-                                            class="lni lni-cog"></i> Cambiar
-                                        contraseña </a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
@@ -122,7 +108,6 @@ $usuario = $_SESSION['usuario'];
                                 </li>
                             </ul>
                         </div>
-                        <!-- profile end -->
                     </div>
                 </div>
             </div>
@@ -130,63 +115,93 @@ $usuario = $_SESSION['usuario'];
     </header>
 
     <main class="main">
-        <div class="container-fluid">
-            <div class="row">
+        <div class="container-fluid">            <div class="row">
                 <div class="col-12">
-                <?php
-                    if ($usuario['tipousuario'] == 'administrador') {
+                    <?php
+                    // Mensaje de bienvenida basado en el cargo
+                    if ($usuarioActual['tipousuario'] === 'empleado') {
+                        $cargoNombre = $usuarioActual['cargo']['nombre'] ?? 'Empleado';
+                        $alertClass = 'alert-info';
+                        
+                        if ($cargoNombre === 'Administrador') {
+                            $alertClass = 'alert-danger';
+                        } elseif (in_array($cargoNombre, ['Gerente', 'Cajero'])) {
+                            $alertClass = 'alert-warning';
+                        }
                         ?>
-                        <div class="alert alert-danger text-center">
-                            <h1>BIENVENIDO ADMINISTRADOR</h1>
+                        <div class="alert <?= $alertClass ?> text-center">
+                            <h1>BIENVENIDO <?= strtoupper(htmlspecialchars($cargoNombre)) ?></h1>
+                            <p class="mb-0"><?= htmlspecialchars($usuarioActual['nombre'] . ' ' . $usuarioActual['apellido_paterno']) ?></p>
                         </div>
                         <?php
-                    }
-                    if ($usuario['tipousuario'] == 'cajero') {
-                        ?>
-                        <div class="alert alert-warning text-center">
-                            <h1>BIENVENIDO CAJERO</h1>
-                        </div>
-                        <?php
-                    }
-                    if ($usuario['tipousuario'] == 'cliente') {
+                    } elseif ($usuarioActual['tipousuario'] === 'cliente') {
                         ?>
                         <div class="alert alert-success text-center">
                             <h1>BIENVENIDO CLIENTE</h1>
+                            <p class="mb-0"><?= htmlspecialchars($usuarioActual['nombre'] . ' ' . $usuarioActual['apellido_paterno']) ?></p>
                         </div>
                         <?php
                     }
-                ?>
+                    ?>
                 </div>
+            </div>
+            
+            <!-- Contenido adicional del dashboard -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Estado del Sistema</h5>
+                            <p class="card-text">
+                                Estado de cuenta: <span class="badge bg-success"><?= $usuarioActual['estado'] ?></span>
+                            </p>
+                            <?php if ($usuarioActual['tipousuario'] === 'empleado' && !empty($usuarioActual['permisos'])): ?>
+                            <div class="mt-3">
+                                <h6>Permisos asignados:</h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <?php foreach ($usuarioActual['permisos'] as $permiso): ?>
+                                        <span class="badge bg-primary">
+                                            <?= htmlspecialchars($permiso) ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    
+            </div>
+        </div>
     </main>
+    
     <footer class="footer">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-6 order-last order-md-first">
                     <div class="copyright text-center my-auto">
+                        <p>&copy; <?= date('Y') ?> Edil Rosales Zambrana    . Todos los derechos reservados.</p>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="terms d-flex justify-content-center justify-content-md-end">
-                        <a href="#0" class="text-sm">Term & Conditions</a>
-                        <a href="#0" class="text-sm ml-15">Privacy & Policy</a>
+                        <a href="#0" class="text-sm">Términos & Condiciones</a>
+                        <a href="#0" class="text-sm ml-15">Política de Privacidad</a>
                     </div>
                 </div>
             </div>
         </div>
     </footer>
+    
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/dynamic-pie-chart.js"></script>
+    <script src="assets/js/moment.min.js"></script>
+    <script src="assets/js/fullcalendar.js"></script>
+    <script src="assets/js/jvectormap.min.js"></script>
+    <script src="assets/js/world-merc.js"></script>
+    <script src="assets/js/polyfill.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/Chart.min.js"></script>
 </body>
 
 </html>
-<script src="assets/js/jquery.min.js"></script>
-<script src="assets/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/dynamic-pie-chart.js"></script>
-<script src="assets/js/moment.min.js"></script>
-<script src="assets/js/fullcalendar.js"></script>
-<script src="assets/js/jvectormap.min.js"></script>
-<script src="assets/js/world-merc.js"></script>
-<script src="assets/js/polyfill.js"></script>
-<script src="assets/js/main.js"></script>
-<script src="assets/js/Chart.min.js"></script>

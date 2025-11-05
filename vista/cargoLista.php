@@ -16,13 +16,15 @@
                 <thead class="table-dark">
                     <tr>
                         <th>Cargo</th>
+                        <th>Descripcion</th>
                         <th colspan="2">Operaciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($cargos as $cargo): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($cargo['cargo']); ?></td>
+                            <td><?php echo htmlspecialchars($cargo['nombre']); ?></td>
+                            <td><?php echo htmlspecialchars($cargo['descripcion']); ?></td>
                             <td>
                                 <a href='../controlador/cargoModifica.php?id=<?php echo $cargo['id']; ?>'
                                    class="btn btn-success btn-sm">Editar</a>

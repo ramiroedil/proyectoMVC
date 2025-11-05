@@ -7,43 +7,29 @@
 </div>
 
 <div class="row justify-content-center">
-    <div class="col-md-4">
-        <a href="../controlador/usuarioRegistro.php?usuario=administrador" class="text-decoration-none">
+    <div class="col-md-6">
+        <a href="../controlador/empleadoRegistro.php" class="text-decoration-none">
             <div class="card text-center hover-shadow">
-                <div class="card-header bg-danger text-white">
-                    <h5><i class="fas fa-user-shield fa-3x mb-2"></i></h5>
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-user-tie fa-3x mb-2"></i></h5>
                 </div>
                 <div class="card-body">
-                    <h4 class="text-danger">Administrador</h4>
-                    <p class="text-muted">Acceso completo al sistema</p>
+                    <h4 class="text-primary">Empleado</h4>
+                    <p class="text-muted">Personal de la empresa con cargo específico</p>
                 </div>
             </div>
         </a>
     </div>
     
-    <div class="col-md-4">
-        <a href="../controlador/usuarioRegistro.php?usuario=cajero" class="text-decoration-none">
-            <div class="card text-center hover-shadow">
-                <div class="card-header bg-warning text-dark">
-                    <h5><i class="fas fa-cash-register fa-3x mb-2"></i></h5>
-                </div>
-                <div class="card-body">
-                    <h4 class="text-warning">Cajero</h4>
-                    <p class="text-muted">Gestión de ventas</p>
-                </div>
-            </div>
-        </a>
-    </div>
-    
-    <div class="col-md-4">
-        <a href="../controlador/usuarioRegistro.php?usuario=cliente" class="text-decoration-none">
+    <div class="col-md-6">
+        <a href="../controlador/clienteRegistro.php" class="text-decoration-none">
             <div class="card text-center hover-shadow">
                 <div class="card-header bg-info text-white">
                     <h5><i class="fas fa-user fa-3x mb-2"></i></h5>
                 </div>
                 <div class="card-body">
                     <h4 class="text-info">Cliente</h4>
-                    <p class="text-muted">Usuario estándar</p>
+                    <p class="text-muted">Cliente del sistema</p>
                 </div>
             </div>
         </a>

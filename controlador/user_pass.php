@@ -15,10 +15,10 @@ if ($new_password !== $confirm_new_password) {
 
 $api = new ApiClient();
 
-// Cambiar contraseña
-$response = $api->patch("/usuario/{$id}/password", [
-    'current_password' => $current_password,
-    'new_password' => $new_password
+// Usar el endpoint correcto: POST /usuario/change-password/:id
+$response = $api->post("/usuario/change-password/{$id}", [
+    'oldPassword' => $current_password,
+    'newPassword' => $new_password
 ]);
 
 if ($response['success']) {
@@ -29,7 +29,9 @@ if ($response['success']) {
 } else {
     $error = 'fallo_actualizacion';
     
-    if (strpos($response['error'], 'actual') !== false || strpos($response['error'], 'current') !== false) {
+    if (strpos($response['error'], 'actual') !== false || 
+        strpos($response['error'], 'current') !== false ||
+        strpos($response['error'], 'incorrecta') !== false) {
         $error = 'contraseña_incorrecta';
     }
     

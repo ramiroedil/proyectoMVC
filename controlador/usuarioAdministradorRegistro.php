@@ -1,5 +1,6 @@
 <?php
 require_once(__DIR__ . '/../modelo/ApiClient.php');
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre']);
     $paterno = trim($_POST['paterno']);
@@ -9,10 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['pasword'];
     $fecha_nacimiento = $_POST['fechanacimiento'];
     $email = trim($_POST['email']);
-    $cargo_id = $_POST['cargo'];  // Cargo seleccionado
-    $estado_laboral = $_POST['estadoLaboral'];  // Estado laboral seleccionado
+    $telefono = trim($_POST['telefono'] ?? '');
+    $direccion = trim($_POST['direccion'] ?? '');
+    $genero = $_POST['genero'] ?? null;
+    $cargo_id = $_POST['cargo'];
+    $estado_laboral = $_POST['estadoLaboral'];
     
     $api = new ApiClient();
+    // Usar el endpoint: POST /usuario/register
     $response = $api->post('/usuario/register', [
         'usuario' => $username,
         'password' => $password,
@@ -22,8 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'ci' => $ci,
         'fecha_nacimiento' => $fecha_nacimiento,
         'email' => $email,
-        'id_cargo' => $cargo_id,  // Cargo ID
-        'estadoLaboral' => $estado_laboral  // Estado laboral
+        'telefono' => $telefono,
+        'direccion' => $direccion,
+        'genero' => $genero,
+        'id_cargo' => $cargo_id,
+        'estadoLaboral' => $estado_laboral
     ]);
     
     if ($response['success']) {
@@ -38,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ?>
         <script type="text/javascript">
             alert("Error al registrar: <?php echo addslashes($response['error']); ?>");
+            history.back();
         </script>
         <?php
     }

@@ -1,23 +1,32 @@
 <?php
 require_once(__DIR__ . '/../modelo/ApiClient.php');
+require_once(__DIR__ . '/../helpers/Session.php');
 
-header('Content-Type: application/json');
+Session::start();
+if (!Session::has('usuario') || !Session::has('token')) {
+    echo json_encode(['success' => false, 'error' => 'No autorizado']);
+    exit();
+}
 
-if (isset($_POST['id_usuario']) && isset($_POST['estado'])) {
-    $id = intval($_POST['id_usuario']);
-    $nuevoEstado = $_POST['estado'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id_usuario = intval($_POST['id_usuario']);
+    $estado = $_POST['estado'];
     
     $api = new ApiClient();
-    $response = $api->patch("/usuario/{$id}/estado", [
-        'estado' => $nuevoEstado
-    ]);
+    
+    if ($estado === 'activo') {
+        $response = $api->patch("/usuario/activate/{$id_usuario}");
+    } else {
+        $response = $api->patch("/usuario/deactivate/{$id_usuario}");
+    }
     
     if ($response['success']) {
-        echo json_encode(["success" => true, "estado" => $nuevoEstado]);
+        echo json_encode(['success' => true]);
     } else {
-        echo json_encode(["success" => false, "error" => $response['error']]);
+        $error = $response['message'] ?? $response['error'] ?? 'Error al cambiar estado';
+        echo json_encode(['success' => false, 'error' => $error]);
     }
 } else {
-    echo json_encode(["success" => false, "error" => "Datos incompletos."]);
+    echo json_encode(['success' => false, 'error' => 'Método no permitido']);
 }
 ?>

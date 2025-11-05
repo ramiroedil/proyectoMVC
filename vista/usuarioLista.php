@@ -16,72 +16,81 @@
         <?php if (!empty($usuarios)): ?>
             <div class="table-responsive">
                 <table class="table table-striped table-bordered text-center" id="tblData">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>N°</th>
-                            <th>Usuario</th>
-                            <th>Nombre Completo</th>
-                            <th>CI</th>
-                            <th>Email</th>
-                            <th>Cargo</th>
-                            <th>Estado</th>
-                            <th colspan="2">Operaciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        $id = 1;
-                        foreach ($usuarios as $usuario): 
-                        ?>
-                            <tr>
-                                <td><?= $id++; ?></td>
-                                <td><?= htmlspecialchars($usuario['usuario']); ?></td>
-                                <td><?= htmlspecialchars($usuario['nombre'] . ' ' . $usuario['apellido_paterno'] . ' ' . $usuario['apellido_materno']); ?></td>
-                                <td><?= htmlspecialchars($usuario['ci']); ?></td>
-                                <td><?= htmlspecialchars($usuario['email']); ?></td>
-                                <td>
-                                    <?php
-                                    $badge_class = 'bg-secondary'; // color por defecto
-                                    $cargo_display = 'Sin cargo';
+<thead class="table-dark">
+    <tr>
+        <th>N°</th>
+        <th>Usuario</th>
+        <th>Nombre Completo</th>
+        <th>CI</th>
+        <th>Email</th>
+        <th>Teléfono</th>
+        <th>Dirección</th>
+        <th>Cargo</th>
+        <th>Estado</th>
+        <th colspan="2">Operaciones</th>
+    </tr>
+</thead>
+<tbody>
+    <?php 
+    $id = 1;
+    foreach ($usuarios as $usuario): 
+    ?>
+        <tr>
+            <td><?= $id++; ?></td>
+            <td><?= htmlspecialchars($usuario['usuario']); ?></td>
+            <td><?= htmlspecialchars($usuario['nombre'] . ' ' . $usuario['apellido_paterno'] . ' ' . ($usuario['apellido_materno'] ?? '')); ?></td>
+            <td><?= htmlspecialchars($usuario['ci']); ?></td>
+            <td><?= htmlspecialchars($usuario['email']); ?></td>
+            <td><?= htmlspecialchars($usuario['telefono'] ?? 'N/A'); ?></td>
+            <td><?= htmlspecialchars($usuario['direccion'] ?? 'N/A'); ?></td>
+            <td>
+                <?php
+                $badge_class = 'bg-secondary';
+                $cargo_display = 'Sin cargo';
 
-                                    // Verificamos si el usuario tiene un cargo
-                                    if (isset($usuario['empleado']['cargo']['nombre'])) {
-                                        $cargo = strtolower($usuario['empleado']['cargo']['nombre']);
-                                        if ($cargo == 'administrador') $badge_class = 'bg-danger';
-                                        elseif ($cargo == 'cajero') $badge_class = 'bg-warning';
-                                        elseif ($cargo == 'cliente') $badge_class = 'bg-info';
-                                        $cargo_display = ucfirst($usuario['empleado']['cargo']['nombre']);
-                                    }
-                                    ?>
-                                    <span class="badge <?= $badge_class ?>"><?= $cargo_display; ?></span>
-                                </td>
-                                <td>
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" 
-                                               data-user-id="<?= $usuario['id'] ?>"
-                                               onchange="actualizarEstado(this)" 
-                                               <?= ($usuario['estado'] == 'activo') ? 'checked' : ''; ?>>
-                                        <label class="form-check-label" id="state-label-<?= $usuario['id'] ?>">
-                                            <?= ucfirst($usuario['estado']); ?>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>
-                                    <a href="../controlador/usuarioEditar.php?id=<?= $usuario['id']; ?>" 
-                                       class="btn btn-success btn-sm">
-                                        <i class="fas fa-edit"></i> Editar
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="../controlador/usuarioEliminar.php?id=<?= $usuario['id']; ?>" 
-                                       class="btn btn-danger btn-sm"
-                                       onclick="return confirm('¿Está seguro de eliminar este usuario?')">
-                                        <i class="fas fa-trash"></i> Eliminar
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
+                // Verificar si es empleado y tiene cargo
+                if (isset($usuario['empleado']['cargo']['nombre'])) {
+                    $cargo = strtolower($usuario['empleado']['cargo']['nombre']);
+                    if ($cargo == 'administrador' || $cargo == 'gerente') $badge_class = 'bg-danger';
+                    elseif ($cargo == 'cajero') $badge_class = 'bg-warning text-dark';
+                    elseif ($cargo == 'vendedor') $badge_class = 'bg-success';
+                    $cargo_display = ucfirst($usuario['empleado']['cargo']['nombre']);
+                }
+                // Verificar si es cliente
+                elseif (isset($usuario['cliente'])) {
+                    $badge_class = 'bg-info';
+                    $cargo_display = 'Cliente';
+                }
+                ?>
+                <span class="badge <?= $badge_class ?>"><?= $cargo_display; ?></span>
+            </td>
+            <td>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" 
+                           data-user-id="<?= $usuario['id'] ?>"
+                           onchange="actualizarEstado(this)" 
+                           <?= ($usuario['estado'] == true || $usuario['estado'] == 1) ? 'checked' : ''; ?>>
+                    <label class="form-check-label" id="state-label-<?= $usuario['id'] ?>">
+                        <?= ($usuario['estado'] == true || $usuario['estado'] == 1) ? 'Activo' : 'Inactivo'; ?>
+                    </label>
+                </div>
+            </td>
+            <td>
+                <a href="../controlador/usuarioEditar.php?id=<?= $usuario['id']; ?>" 
+                   class="btn btn-success btn-sm">
+                    <i class="fas fa-edit"></i> Editar
+                </a>
+            </td>
+            <td>
+                <a href="../controlador/usuarioEliminar.php?id=<?= $usuario['id']; ?>" 
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('¿Está seguro de eliminar este usuario?')">
+                    <i class="fas fa-trash"></i> Eliminar
+                </a>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+</tbody>
                 </table>
             </div>
         <?php else: ?>

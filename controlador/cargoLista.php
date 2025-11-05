@@ -2,7 +2,7 @@
 require_once(__DIR__ . '/../modelo/ApiClient.php');
 
 $api = new ApiClient();
-$response = $api->get('/cargo');
+$response = $api->get('/cargo/all');
 
 if ($response['success']) {
     $cargos = $response['data'];
