@@ -1,10 +1,53 @@
 <?php
+/**
+ * =====================================================
+ * CLASE SESSION - MANEJO CENTRALIZADO DE SESIONES
+ * =====================================================
+ * 
+ * ✅ AQUÍ se configura y maneja todo sobre sesiones
+ * ✅ config.php NO toca sesiones
+ * 
+ * Autor: Edil Rosales
+ */
+
 class Session {
     
     /**
+     * Flag para evitar configurar dos veces
+     */
+    private static $configured = false;
+    
+    /**
+     * Configurar sesión (se ejecuta solo una vez)
+     */
+    private static function configure() {
+        // ⚠️ IMPORTANTE: Estos ini_set() deben estar ANTES de session_start()
+        // y solo se ejecutan una vez
+        if (self::$configured) {
+            return;
+        }
+        
+        // Configuración de sesión
+        ini_set('session.gc_maxlifetime', 3600);        // 1 hora
+        ini_set('session.cookie_lifetime', 3600);       // 1 hora
+        ini_set('session.cookie_httponly', 1);          // Solo HTTP
+        ini_set('session.use_only_cookies', 1);         // Solo cookies
+        ini_set('session.cookie_secure', 0);            // 0=HTTP, 1=HTTPS
+        ini_set('session.use_strict_mode', 1);          // Modo estricto
+        ini_set('session.cookie_samesite', 'Lax');      // Protección CSRF
+        
+        self::$configured = true;
+    }
+    
+    /**
      * Iniciar sesión
+     * ✅ Se configura primero, luego se inicia
      */
     public static function start() {
+        // Primero: Configurar (antes de session_start)
+        self::configure();
+        
+        // Segundo: Iniciar sesión si no está iniciada
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -85,4 +128,5 @@ class Session {
         return self::get('usuario');
     }
 }
+
 ?>

@@ -1,35 +1,48 @@
 <?php
 session_start();
+require_once(__DIR__ . '/config/config.php');
+require_once(__DIR__ . '/modelo/ApiClientPublic.php');
 
 // Inicializar carrito de sesión si no existe
 if (!isset($_SESSION['carrito_publico'])) {
     $_SESSION['carrito_publico'] = [];
 }
 
-// Simular productos desde una base de datos
-$categorias = [
-    "Para Niños", "Para Niñas", "Para bebés", "Figuras de acción",
-    "Juegos de mesa", "Vehículos", "Muñecas y accesorios", "Peluches",
-    "Juegos al aire libre", "Artes y manualidades", "Educativos", "Bloques y legos"
-];
+// Cargar productos desde API
+$api = new ApiClientPublic();
+$productos = [];
+$categorias = [];
+$activa = '';
 
-$productos = [
-    "Para Niños" => [
-        ["id" => 1, "nombre" => "Camión de Bomberos", "img" => "assets/imagenes/niño1.jpg", "precio" => 45, "desc" => "Con luces y sonidos."],
-        ["id" => 2, "nombre" => "Dinosaurios Armables", "img" => "assets/imagenes/niño2.jpg", "precio" => 38.5, "desc" => "Set de construcción."],
-        ["id" => 3, "nombre" => "Pistola de Agua", "img" => "assets/imagenes/niño3.jpg", "precio" => 22, "desc" => "Gran alcance y fácil de llenar."],
-    ],
-    "Para Niñas" => [
-        ["id" => 4, "nombre" => "Casa de Muñecas", "img" => "assets/imagenes/niña1.jpg", "precio" => 65, "desc" => "Con accesorios."],
-        ["id" => 5, "nombre" => "Set de Belleza Infantil", "img" => "assets/imagenes/niña2.jpg", "precio" => 22, "desc" => "Incluye peine, espejo y maquillaje no tóxico."],
-    ],
-    "Figuras de acción" => [
-        ["id" => 6, "nombre" => "Figura Spider-Man", "img" => "assets/imagenes/herue1.jpg", "precio" => 25.9, "desc" => "Superhéroe articulado."],
-        ["id" => 7, "nombre" => "Figura Batman", "img" => "assets/imagenes/herue2.jpg", "precio" => 28, "desc" => "Incluye capa y batarang."],
-    ],
-];
+// Obtener productos activos
+$response = $api->get('/producto/active');
+if ($response['success']) {
+    $productosAPI = $response['data'];
+    
+    // Extraer categorías únicas
+    $categorias_temp = [];
+    foreach ($productosAPI as $prod) {
+        $tipo = $prod['tipo'] ?? 'Sin categoría';
+        if (!in_array($tipo, $categorias_temp)) {
+            $categorias_temp[] = $tipo;
+        }
+        
+        // Agrupar por tipo
+        if (!isset($productos[$tipo])) {
+            $productos[$tipo] = [];
+        }
+        $productos[$tipo][] = $prod;
+    }
+    $categorias = $categorias_temp;
+    $activa = isset($categorias[0]) ? $categorias[0] : '';
+} else {
+    $error_message = $response['error'];
+}
 
-$activa = isset($_GET['cat']) && in_array($_GET['cat'], $categorias) ? $_GET['cat'] : $categorias[0];
+// Si se selecciona una categoría
+if (isset($_GET['cat']) && in_array($_GET['cat'], $categorias)) {
+    $activa = $_GET['cat'];
+}
 
 // Procesamiento de AJAX para agregar al carrito
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -39,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $producto_id = intval($_POST['producto_id']);
         $cantidad = intval($_POST['cantidad'] ?? 1);
         
-        // Buscar el producto en todas las categorías
+        // Buscar el producto en la API
         $producto_encontrado = null;
         foreach ($productos as $items) {
             foreach ($items as $prod) {
@@ -63,11 +76,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             
             if (!$existe) {
                 $_SESSION['carrito_publico'][] = [
-                    'id' => $producto_id,
+                    'id' => $producto_encontrado['id'],
                     'nombre' => $producto_encontrado['nombre'],
-                    'precio' => $producto_encontrado['precio'],
+                    'precio' => $producto_encontrado['precio_venta'],
                     'cantidad' => $cantidad,
-                    'imagen' => $producto_encontrado['img']
+                    'imagen' => $producto_encontrado['imagen'],
+                    'descripcion' => $producto_encontrado['descripcion']
                 ];
             }
             
@@ -188,6 +202,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             background: #fffbe6;
             transition: transform 0.3s, box-shadow 0.3s;
             height: 100%;
+            display: flex;
+            flex-direction: column;
         }
         
         .card-producto:hover {
@@ -199,6 +215,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             height: 200px;
             object-fit: cover;
             border-bottom: 2px solid #ffe066;
+        }
+        
+        .card-producto .card-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
         
         .precio {
@@ -213,6 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             font-weight: bold;
             border: none;
             transition: all 0.3s;
+            margin-top: auto;
         }
         
         .btn-agregar:hover {
@@ -266,6 +289,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         .hero-section p {
             font-size: 1.1rem;
         }
+
+        .producto-sin-imagen {
+            height: 200px;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #adb5bd;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading-spinner.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -311,33 +354,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <?php foreach ($categorias as $cat): ?>
                 <a href="?cat=<?= urlencode($cat) ?>"
                    class="btn rounded-pill categoria-btn px-3 py-2<?= $cat == $activa ? ' active' : '' ?>">
-                    <?= $cat ?>
+                    <?= htmlspecialchars($cat) ?>
                 </a>
             <?php endforeach; ?>
         </div>
     </div>
 
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Cargando productos...</p>
+    </div>
+
     <!-- Productos -->
     <div class="container py-4">
-        <div class="row g-4">
-            <?php if (!empty($productos[$activa])): ?>
-                <?php foreach ($productos[$activa] as $prod): ?>
+        <div class="row g-4" id="productosContainer">
+            <?php 
+            if (!empty($productos) && isset($productos[$activa])): 
+                foreach ($productos[$activa] as $prod): 
+            ?>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                         <div class="card card-producto">
-                            <img src="<?= $prod['img'] ?>" class="card-img-top" alt="<?= $prod['nombre'] ?>">
+                            <?php if (!empty($prod['imagen'])): ?>
+                                <img src="<?= API_BASE_URL ?>/uploads/productos/<?= htmlspecialchars($prod['imagen']) ?>" 
+                                     class="card-img-top" alt="<?= htmlspecialchars($prod['nombre']) ?>"
+                                     onerror="this.src='assets/imagenes/no-image.jpg'">
+                            <?php else: ?>
+                                <div class="producto-sin-imagen">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                            <?php endif; ?>
+                            
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title" style="color: #e85d04;"><?= $prod['nombre'] ?></h5>
-                                <p class="card-text text-muted"><?= $prod['desc'] ?></p>
-                                <p class="precio mt-auto"><?= number_format($prod['precio'], 2) ?> Bs</p>
-                                <button class="btn btn-agregar btn-sm w-100 mt-2" 
-                                        onclick="agregarAlCarrito(<?= $prod['id'] ?>, '<?= htmlspecialchars($prod['nombre']) ?>', <?= $prod['precio'] ?>)">
-                                    <i class="fas fa-cart-plus"></i> Agregar
-                                </button>
+                                <h5 class="card-title" style="color: #e85d04;">
+                                    <?= htmlspecialchars($prod['nombre']) ?>
+                                </h5>
+                                <p class="card-text text-muted">
+                                    <?= htmlspecialchars(substr($prod['descripcion'] ?? '', 0, 50)) ?>...
+                                </p>
+                                
+                                <div class="mt-auto">
+                                    <p class="precio">Bs <?= number_format($prod['precio_venta'], 2) ?></p>
+                                    
+                                    <?php if ($prod['stock'] > 0): ?>
+                                        <button class="btn btn-agregar btn-sm w-100 mb-2" 
+                                                onclick="agregarAlCarrito(<?= $prod['id'] ?>, '<?= htmlspecialchars(addslashes($prod['nombre'])) ?>', <?= $prod['precio_venta'] ?>)">
+                                            <i class="fas fa-cart-plus"></i> Agregar
+                                        </button>
+                                        <small class="text-success">Stock: <?= $prod['stock'] ?></small>
+                                    <?php else: ?>
+                                        <button class="btn btn-danger btn-sm w-100" disabled>
+                                            <i class="fas fa-ban"></i> Agotado
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
                     </div>
-                <?php endforeach; ?>
-            <?php else: ?>
+            <?php 
+                endforeach;
+            else: 
+            ?>
                 <div class="col-12 text-center text-muted">
                     <p>No hay productos en esta categoría.</p>
                 </div>
@@ -376,6 +455,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     <!-- Scripts -->
     <script src="assets/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Función para agregar producto al carrito
         function agregarAlCarrito(productoId, nombre, precio) {
             fetch('index.php', {
                 method: 'POST',
@@ -389,11 +469,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 if (data.success) {
                     mostrarNotificacion('success', `"${nombre}" agregado al carrito`);
                     actualizarCarrito();
+                } else {
+                    mostrarNotificacion('error', data.message || 'Error al agregar el producto');
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarNotificacion('error', 'Error de conexión');
+            });
         }
 
+        // Actualizar estado del carrito
         function actualizarCarrito() {
             fetch('index.php', {
                 method: 'POST',
@@ -408,9 +494,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     document.getElementById('carrito-count').textContent = data.count;
                     renderizarCarrito(data.carrito);
                 }
-            });
+            })
+            .catch(error => console.error('Error:', error));
         }
 
+        // Renderizar carrito en el modal
         function renderizarCarrito(carrito) {
             const listaCarrito = document.getElementById('lista-carrito');
             const totalCarrito = document.getElementById('total-carrito');
@@ -433,15 +521,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 const subtotal = item.precio * item.cantidad;
                 total += subtotal;
                 
+                // Construir URL de imagen
+                const imagenUrl = item.imagen ? `<?= API_BASE_URL ?>/uploads/productos/${item.imagen}` : 'assets/imagenes/no-image.jpg';
+                
                 html += `
                     <div class="item-carrito-modal">
                         <div class="row align-items-center">
                             <div class="col-md-3">
-                                <img src="${item.imagen}" alt="${item.nombre}" class="img-fluid rounded" style="max-height: 60px; object-fit: cover;">
+                                <img src="${imagenUrl}" alt="${item.nombre}" class="img-fluid rounded" 
+                                     style="max-height: 60px; object-fit: cover;" 
+                                     onerror="this.src='assets/imagenes/no-image.jpg'">
                             </div>
                             <div class="col-md-4">
                                 <strong>${item.nombre}</strong>
-                                <p class="mb-0 text-muted small">Bs ${item.precio.toFixed(2)}</p>
+                                <p class="mb-0 text-muted small">Bs ${parseFloat(item.precio).toFixed(2)}</p>
                             </div>
                             <div class="col-md-2 text-center">
                                 <span class="badge bg-primary">${item.cantidad}</span>
@@ -468,6 +561,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             `;
         }
 
+        // Eliminar del carrito
         function eliminarDelCarrito(productoId) {
             if (confirm('¿Deseas eliminar este producto del carrito?')) {
                 fetch('index.php', {
@@ -483,10 +577,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         mostrarNotificacion('success', data.message);
                         actualizarCarrito();
                     }
-                });
+                })
+                .catch(error => console.error('Error:', error));
             }
         }
 
+        // Notificaciones
         function mostrarNotificacion(tipo, mensaje) {
             const notificacion = document.createElement('div');
             notificacion.className = `alert alert-${tipo === 'success' ? 'success' : 'danger'} position-fixed`;
@@ -503,9 +599,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }, 3000);
         }
 
+        // Inicializar carrito al cargar
         document.addEventListener('DOMContentLoaded', function() {
             actualizarCarrito();
         });
     </script>
 </body>
-</html> 
+</html>

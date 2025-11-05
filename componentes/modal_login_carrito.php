@@ -1,5 +1,5 @@
 <?php
-// Modal de Login para Carrito
+// Modal de Login para Carrito - MEJORADO
 ?>
 
 <!-- Modal Login para Comprar -->
@@ -103,7 +103,6 @@
         
         const username = document.getElementById('loginUsername').value;
         const password = document.getElementById('loginPassword').value;
-        const carrito = <?php echo json_encode($_SESSION['carrito_publico'] ?? []); ?>;
         
         // Obtener carrito actual del DOM
         const carritoActual = await obtenerCarritoActual();
@@ -142,7 +141,7 @@
             } else {
                 // Mostrar error
                 const errorDiv = document.getElementById('loginError');
-                document.getElementById('loginErrorText').textContent = data.message;
+                document.getElementById('loginErrorText').textContent = data.message || 'Error en la autenticación';
                 errorDiv.classList.remove('d-none');
                 btn.innerHTML = btnOriginal;
                 btn.disabled = false;
@@ -160,7 +159,7 @@
     // Función auxiliar para obtener carrito
     function obtenerCarritoActual() {
         return new Promise((resolve) => {
-            fetch('portal_publico.php', {
+            fetch('index.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -180,18 +179,31 @@
         const btnComprar = document.getElementById('btn-comprar');
         if (btnComprar) {
             btnComprar.addEventListener('click', function(e) {
-                const carrito = <?php echo json_encode($_SESSION['carrito_publico'] ?? []); ?>;
-                
-                if (carrito.length === 0) {
-                    alert('Tu carrito está vacío');
+                fetch('index.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'action=obtener_carrito'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.carrito || data.carrito.length === 0) {
+                        alert('Tu carrito está vacío');
+                        e.preventDefault();
+                        return;
+                    }
+                    
+                    // Mostrar modal de login
+                    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                    loginModal.show();
                     e.preventDefault();
-                    return;
-                }
-                
-                // Mostrar modal de login
-                const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-                loginModal.show();
-                e.preventDefault();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al verificar el carrito');
+                    e.preventDefault();
+                });
             });
         }
     });
