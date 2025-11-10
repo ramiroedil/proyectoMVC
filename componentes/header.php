@@ -6,7 +6,6 @@ if (!Session::isAuthenticated()) {
     exit();
 }
 
-// Cambiar nombre de variable para evitar conflictos
 $usuarioActual = Session::getUser();
 ?>
 <!DOCTYPE html>

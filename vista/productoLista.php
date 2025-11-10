@@ -72,10 +72,16 @@
                         </td>
                         <td><?= htmlspecialchars($producto['tipo'] ?? 'N/A'); ?></td>
                         <td>
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#mostrar_<?= $producto['id'] ?>">
-                                <img src="../controlador/imagenes/<?= htmlspecialchars($producto['imagen']); ?>" 
-                                     width="70px" height="70px" class="rounded">
-                            </a>
+                           <?php if (!empty($producto['imagen'])): ?>
+                                <!-- ✅ IMAGEN DESDE BACKEND -->
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#mostrar_<?= $producto['id'] ?>">
+                                    <img src="<?= IMAGE_URL . htmlspecialchars($producto['imagen']); ?>" 
+                                         width="70px" height="70px" class="rounded"
+                                         onerror="this.src='<?= IMAGE_DEFAULT ?>'">
+                                </a>
+                            <?php else: ?>
+                                <span class="text-muted">Sin imagen</span>
+                            <?php endif; ?>
                         </td>
                         <td>
                             <a href="../controlador/productoModificar.php?id=<?= $producto['id']; ?>" 
@@ -101,22 +107,25 @@
 
 <!-- MODALES PARA IMÁGENES -->
 <?php foreach ($productos as $producto): ?>
-    <div class="modal fade" id="mostrar_<?= $producto['id'] ?>">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-dark text-white">
-                    <h4 class="modal-title text-white text-center w-100">
-                        <?= htmlspecialchars($producto['nombre']); ?>
-                    </h4>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <img src="../controlador/imagenes/<?= htmlspecialchars($producto['imagen']); ?>" 
-                         width="100%" height="100%" style="object-fit: contain;">
+    <?php if (!empty($producto['imagen'])): ?>
+        <div class="modal fade" id="mostrar_<?= $producto['id'] ?>">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark text-white">
+                        <h4 class="modal-title text-white text-center w-100">
+                            <?= htmlspecialchars($producto['nombre']); ?>
+                        </h4>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- ✅ IMAGEN DESDE BACKEND -->
+                        <img src="<?= IMAGE_URL . htmlspecialchars($producto['imagen']); ?>" 
+                             width="100%" height="100%" style="object-fit: contain;"
+                             onerror="this.src='<?= IMAGE_DEFAULT ?>'">
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    <?php endif; ?>
 <?php endforeach; ?>
-
 <?php include("../componentes/footer.php"); ?>

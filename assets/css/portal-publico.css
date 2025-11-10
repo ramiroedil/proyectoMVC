@@ -1,0 +1,297 @@
+/* ========================================
+   ESTILOS GENERALES
+   ======================================== */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f8f9fa;
+}
+
+/* ========================================
+   NAVBAR
+   ======================================== */
+
+.navbar-custom {
+    background: linear-gradient(90deg, #e85d04, #f48c06);
+    box-shadow: 0 2px 8px rgba(232, 93, 4, 0.2);
+}
+
+.navbar-custom .navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: white !important;
+}
+
+.btn-carrito {
+    position: relative;
+    background: white;
+    color: #e85d04;
+    border: 2px solid white;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.btn-carrito:hover {
+    background: #e85d04;
+    color: white;
+}
+
+.carrito-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+/* ========================================
+   CATEGORÍAS
+   ======================================== */
+
+.categoria-btn {
+    border: 2px solid #343a40;
+    color: #343a40;
+    background: #fff;
+    transition: all 0.2s;
+    font-weight: bold;
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+}
+
+.categoria-btn:hover, 
+.categoria-btn.active {
+    background: linear-gradient(90deg, #e85d04, #f48c06);
+    color: #fff;
+    border-color: #e85d04;
+    text-decoration: none;
+    transform: scale(1.05);
+}
+
+.categorias-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.categorias-titulo {
+    color: #e85d04;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+}
+
+.badge-categoria {
+    background: linear-gradient(90deg, #e85d04, #f48c06);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+/* ========================================
+   TARJETAS DE PRODUCTOS
+   ======================================== */
+
+.card-producto {
+    border: none;
+    border-radius: 1rem;
+    background: white;
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-producto:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(232, 93, 4, 0.2);
+}
+
+.card-producto img {
+    height: 200px;
+    object-fit: cover;
+    border-radius: 1rem 1rem 0 0;
+}
+
+.card-producto .card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+}
+
+.precio {
+    color: #28a745;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.btn-agregar {
+    background: linear-gradient(90deg, #f39c12, #e85d04);
+    color: white;
+    font-weight: bold;
+    border: none;
+    transition: all 0.3s;
+    margin-top: auto;
+}
+
+.btn-agregar:hover {
+    background: linear-gradient(90deg, #e85d04, #d73502);
+    color: white;
+    transform: scale(1.05);
+}
+
+.producto-sin-imagen {
+    height: 200px;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #adb5bd;
+    border-radius: 1rem 1rem 0 0;
+}
+
+/* ========================================
+   HERO SECTION
+   ======================================== */
+
+.hero-section {
+    background: linear-gradient(135deg, #e85d04 0%, #f48c06 100%);
+    color: white;
+    padding: 3rem 0;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.hero-section p {
+    font-size: 1.1rem;
+}
+
+/* ========================================
+   MODAL CARRITO
+   ======================================== */
+
+.modal-carrito {
+    background: linear-gradient(135deg, #fffbe6 0%, #fff9e6 100%);
+}
+
+.item-carrito-modal {
+    background: white;
+    border-left: 4px solid #e85d04;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.btn-login-compra {
+    background: linear-gradient(90deg, #28a745, #20c997);
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 0.75rem 2rem;
+}
+
+.btn-login-compra:hover {
+    background: linear-gradient(90deg, #20c997, #28a745);
+    color: white;
+}
+
+.alert-info-carrito {
+    background: #d1ecf1;
+    border-left: 4px solid #17a2b8;
+}
+
+/* ========================================
+   SIN PRODUCTOS
+   ======================================== */
+
+.sin-productos {
+    text-align: center;
+    padding: 3rem 0;
+}
+
+.sin-productos i {
+    font-size: 3rem;
+    color: #ddd;
+    margin-bottom: 1rem;
+}
+
+/* ========================================
+   NOTIFICACIONES
+   ======================================== */
+
+.notificacion {
+    animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 1.8rem;
+    }
+
+    .card-producto {
+        margin-bottom: 1rem;
+    }
+
+    .categoria-btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-custom .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .hero-section {
+        padding: 2rem 0;
+    }
+
+    .hero-section h1 {
+        font-size: 1.5rem;
+    }
+
+    .categorias-container {
+        padding: 1rem;
+    }
+
+    .item-carrito-modal .row {
+        font-size: 0.9rem;
+    }
+}

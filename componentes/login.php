@@ -14,11 +14,11 @@ if (isset($_POST['user']) && isset($_POST['pasw'])) {
     $api = new ApiClient();
     $response = $api->post('/usuario/validate', [
         'username' => $username,
-        'password' => $password  // ← Se envía en texto plano (CORRECTO)
+        'password' => $password 
     ]);
 
     if ($response['success']) {
-    $data = $response['data']['data']; // <- agregar otro 'data'
+    $data = $response['data']['data'];
     
     Session::set('token', $data['token']);
     
@@ -28,10 +28,10 @@ if (isset($_POST['user']) && isset($_POST['pasw'])) {
             'nombre' => $data['user']['nombre'],
             'apellido_paterno' => $data['user']['apellido_paterno'] ?? '',
             'email' => $data['user']['email'],
-            'tipousuario' => $data['user']['tipo_usuario'], // 'empleado' o 'cliente'
-            'estado' => $data['user']['estado'], // 'activo' o 'inactivo'
-            'cargo' => $data['user']['cargo'] ?? null, // Solo para empleados
-            'permisos' => $data['user']['permisos'] ?? [] // Array de permisos
+            'tipousuario' => $data['user']['tipo_usuario'], 
+            'estado' => $data['user']['estado'], 
+            'cargo' => $data['user']['cargo'] ?? null, 
+            'permisos' => $data['user']['permisos'] ?? [] 
         ]);
                 
     

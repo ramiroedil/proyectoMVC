@@ -1,8 +1,3 @@
-<?php
-// Modal de Login para Carrito - MEJORADO
-?>
-
-<!-- Modal Login para Comprar -->
 <div class="modal fade" id="loginModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -62,7 +57,6 @@
     </div>
 </div>
 
-<!-- Modal Success After Login -->
 <div class="modal fade" id="loginSuccessModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -81,7 +75,6 @@
 </div>
 
 <script>
-    // Toggle para ver/ocultar contraseña en modal login
     document.getElementById('toggleLoginPassword').addEventListener('click', function() {
         const input = document.getElementById('loginPassword');
         const icon = this.querySelector('i');
@@ -97,14 +90,12 @@
         }
     });
 
-    // Manejo del formulario de login
     document.getElementById('formLogin').addEventListener('submit', async function(e) {
         e.preventDefault();
         
         const username = document.getElementById('loginUsername').value;
         const password = document.getElementById('loginPassword').value;
         
-        // Obtener carrito actual del DOM
         const carritoActual = await obtenerCarritoActual();
         
         const btn = this.querySelector('button[type="submit"]');
@@ -124,13 +115,12 @@
             const data = await response.json();
 
             if (data.success) {
-                // Mostrar modal de éxito
+
                 document.getElementById('loginError').classList.add('d-none');
                 
                 const successModal = new bootstrap.Modal(document.getElementById('loginSuccessModal'));
                 successModal.show();
 
-                // Redirigir después de 2 segundos
                 setTimeout(() => {
                     if (data.tipo_usuario === 'empleado') {
                         window.location.href = 'controlador/controladorVenta.php';
@@ -139,7 +129,7 @@
                     }
                 }, 2000);
             } else {
-                // Mostrar error
+
                 const errorDiv = document.getElementById('loginError');
                 document.getElementById('loginErrorText').textContent = data.message || 'Error en la autenticación';
                 errorDiv.classList.remove('d-none');
@@ -156,7 +146,6 @@
         }
     });
 
-    // Función auxiliar para obtener carrito
     function obtenerCarritoActual() {
         return new Promise((resolve) => {
             fetch('index.php', {
@@ -174,7 +163,6 @@
         });
     }
 
-    // Botón "Proceder a Comprar" en el modal del carrito
     document.addEventListener('DOMContentLoaded', function() {
         const btnComprar = document.getElementById('btn-comprar');
         if (btnComprar) {
@@ -194,7 +182,6 @@
                         return;
                     }
                     
-                    // Mostrar modal de login
                     const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
                     loginModal.show();
                     e.preventDefault();

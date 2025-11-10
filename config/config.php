@@ -1,51 +1,27 @@
 <?php
-/**
- * =====================================================
- * CONFIGURACIÓN GLOBAL - PROYECTO TIENDA DE JUGUETES
- * =====================================================
- * 
- * ✅ Las sesiones se manejan en: Session.php
- * ✅ Este archivo solo contiene configuración global
- * 
- * Autor: Edil Rosales
- * ICSNBOLIVIA - La Paz, Bolivia
- */
-
-// =========================================================
-// 1️⃣ RUTAS Y URLs
-// =========================================================
 
 define('API_BASE_URL', 'http://localhost:3000');
 define('API_TIMEOUT', 30);
 define('BASE_URL', 'http://localhost/ProyectoMVC/');
-define('UPLOAD_DIR', 'uploads/productos/');
 
-// =========================================================
-// 2️⃣ BASE DE DATOS
-// =========================================================
+// ✅ CORREGIDO: Usar el API_BASE_URL para las imágenes
+define('IMAGE_URL', API_BASE_URL . '/uploads/');
+define('IMAGE_DEFAULT', API_BASE_URL . '/uploads/default-product.jpg');
 
+// Base de datos
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'tienda_juguetes');
+define('DB_NAME', 'jugue_db');
 
-// =========================================================
-// 3️⃣ ZONA HORARIA
-// =========================================================
-
+// Configuración general
 date_default_timezone_set('America/La_Paz');
 
-// =========================================================
-// 4️⃣ MANEJO DE ERRORES
-// =========================================================
-
+// Errores (cambiar a 0 en PRODUCCIÓN)
 error_reporting(E_ALL);
-ini_set('display_errors', 1);  // Cambiar a 0 en PRODUCCIÓN
+ini_set('display_errors', 1);
 
-// =========================================================
-// 5️⃣ HEADERS DE SEGURIDAD
-// =========================================================
-
+// Headers de seguridad
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
 header('X-XSS-Protection: 1; mode=block');

@@ -15,9 +15,6 @@ class ApiClient
         $this->token = Session::get('token');
     }
 
-    /**
-     * GET request
-     */
     public function get($endpoint, $params = [])
     {
         $url = $this->base_url . $endpoint;
@@ -38,16 +35,11 @@ class ApiClient
 
         return $this->handleResponse($response, $http_code, $error);
     }
-
-    /**
-     * POST request
-     */
-    public function post($endpoint, $data = [], $files = [])
+public function post($endpoint, $data = [], $files = [])
     {
         $ch = curl_init($this->base_url . $endpoint);
 
         if (!empty($files)) {
-            // Manejo de archivos (multipart/form-data)
             $postData = $data;
             foreach ($files as $key => $file) {
                 if (isset($file['tmp_name']) && file_exists($file['tmp_name'])) {
@@ -59,7 +51,6 @@ class ApiClient
                 'Authorization: Bearer ' . $this->token
             ]);
         } else {
-            // JSON request
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Content-Type: application/json',

@@ -1,13 +1,30 @@
 <?php
+
 require_once(__DIR__ . '/../helpers/Session.php');
 Session::start();
+
+$carrito = Session::get('carrito_ventas1', []);
+
+// ✅ DEBUG: Ver qué hay en el carrito
+error_log('═══════════════════════════════════════════');
+error_log('📦 CONTENIDO DEL CARRITO:');
+error_log(json_encode($carrito, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+error_log('═══════════════════════════════════════════');
+
+// Mostrar en la página
+echo "<script>";
+echo "console.log('%c CARRITO ACTUAL ', 'background: #00ff00; color: black; font-weight: bold;');";
+echo "console.log(" . json_encode($carrito, JSON_UNESCAPED_UNICODE) . ");";
+echo "</script>";
+
+// ... resto del código
 
 // PROCESAR SOLO LA ACCIÓN DE ELIMINAR
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'eliminar') {
     if (isset($_POST['indice'])) {
         $indice = intval($_POST['indice']);
         $carrito = Session::get('carrito_ventas1', []);
-        
+
         if (isset($carrito[$indice])) {
             $nombre_producto = $carrito[$indice]['nombre'];
             unset($carrito[$indice]);
@@ -16,13 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
             Session::set('mensaje_carrito', "Producto '$nombre_producto' eliminado del carrito");
         }
     }
-    
+
     header("Location: " . $_SERVER['PHP_SELF']);
     exit();
 }
 
 // Función para calcular el total del carrito
-function calcularTotal() {
+function calcularTotal()
+{
     $total = 0;
     $carrito = Session::get('carrito_ventas1', []);
     foreach ($carrito as $item) {
@@ -60,9 +78,9 @@ include("../componentes/header.php");
                 </a>
             </div>
 
-            <?php 
+            <?php
             $carrito = Session::get('carrito_ventas1', []);
-            if (!empty($carrito)): 
+            if (!empty($carrito)):
             ?>
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
@@ -81,8 +99,26 @@ include("../componentes/header.php");
                                 <tr>
                                     <td style="width: 100px;">
                                         <?php if (!empty($item['imagen'])): ?>
-                                            <img src="../controlador/imagenes/<?php echo htmlspecialchars($item['imagen']); ?>"
-                                                class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
+                                            <?php
+                                            $imageUrl = IMAGE_URL . htmlspecialchars($item['imagen']);
+                                            echo "<!-- DEBUG: Intentando cargar imagen desde: $imageUrl -->";
+
+                                            // Log en consola del navegador
+                                            echo "<script>
+                                                console.log('🖼️  Intentando cargar imagen:', '$imageUrl');
+                                                console.log('📍 Desde archivo:', '" . __FILE__ . "');
+                                                console.log('📦 Datos del item:', " . json_encode($item) . ");
+                                            </script>";
+                                            ?>
+
+                                            <img src="<?= $imageUrl; ?>"
+                                                class="img-thumbnail"
+                                                style="width: 80px; height: 80px; object-fit: cover;"
+                                                onerror="console.error('❌ Error cargando:', this.src); this.src='<?= IMAGE_DEFAULT ?>'"
+                                                onload="console.log('✅ Imagen cargada:', this.src)">
+                                            <img src="<?= IMAGE_URL . htmlspecialchars($item['imagen']); ?>"
+                                                class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;"
+                                                onerror="this.src='<?= IMAGE_DEFAULT ?>'">
                                         <?php else: ?>
                                             <span class="text-muted">Sin imagen</span>
                                         <?php endif; ?>
@@ -101,8 +137,8 @@ include("../componentes/header.php");
                                         <form method="post" style="display: inline;">
                                             <input type="hidden" name="accion" value="eliminar">
                                             <input type="hidden" name="indice" value="<?php echo $indice; ?>">
-                                            <button type="submit" class="btn btn-danger btn-sm" 
-                                                    onclick="return confirm('¿Estás seguro de eliminar este producto?')">
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('¿Estás seguro de eliminar este producto?')">
                                                 <i class="fas fa-trash"></i> Eliminar
                                             </button>
                                         </form>
