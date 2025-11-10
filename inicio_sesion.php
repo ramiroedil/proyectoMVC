@@ -317,7 +317,7 @@ if (isset($_GET['sw'])) {
     </form>
 
     <div class="form-footer">
-  ¿No tienes cuenta? <a href="controlador/usuarioClienteRegistro.php">Regístrate aquí</a>
+  ¿No tienes cuenta? <a href="registroCliente.php">Regístrate aquí</a>
 </div>
   </div>
   <script>

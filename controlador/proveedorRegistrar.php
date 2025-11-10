@@ -1,46 +1,89 @@
 <?php
 require_once(__DIR__ . '/../modelo/ApiClient.php');
 
-if (isset($_POST['registrarProveedor'])) {
-    $empresa = trim($_POST['empresa']);
-    $contacto = trim($_POST['contacto']);
-    $mail = trim($_POST['mail']);
-    $telefono = trim($_POST['telefono']);
-    $direccion = trim($_POST['direccion']);
+$api = new ApiClient();
+
+// Variables
+$error_message = '';
+$success_message = '';
+
+// Procesar formulario POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
+    // Obtener datos del formulario
+    $empresa = trim($_POST['empresa'] ?? '');
+    $nit = trim($_POST['nit'] ?? '');
+    $contacto_nombre = trim($_POST['contacto_nombre'] ?? '');
+    $contacto_cargo = trim($_POST['contacto_cargo'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $telefono = trim($_POST['telefono'] ?? '');
+    $direccion = trim($_POST['direccion'] ?? '');
+    $ciudad = trim($_POST['ciudad'] ?? '');
+    $pais = trim($_POST['pais'] ?? 'Bolivia');
+    $sitio_web = trim($_POST['sitio_web'] ?? '');
     
-    $api = new ApiClient();
+    // Validaciones
+    $errores = [];
     
-    // Si hay logo
-    $files = [];
-    if (isset($_FILES['logo']) && $_FILES['logo']['error'] === 0) {
-        $files['logo'] = $_FILES['logo'];
+    if (empty($empresa)) {
+        $errores[] = 'El nombre de la empresa es requerido';
+    }
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errores[] = 'El email es requerido y debe ser válido';
+    }
+    if (empty($telefono)) {
+        $errores[] = 'El teléfono es requerido';
+    }
+    if (empty($direccion)) {
+        $errores[] = 'La dirección es requerida';
     }
     
-    $data = [
-        'empresa' => $empresa,
-        'contacto' => $contacto,
-        'mail' => $mail,
-        'telefono' => $telefono,
-        'direccion' => $direccion
-    ];
-    
-    $response = $api->post('/proveedor', $data, $files);
-    
-    if ($response['success']) {
-        ?>
-        <script type="text/javascript">
-            alert("Proveedor registrado correctamente");
-            location.href = '../controlador/proveedorLista.php';
-        </script>
-        <?php
+    if (!empty($errores)) {
+        $error_message = implode('<br>', $errores);
     } else {
-        ?>
-        <script type="text/javascript">
-            alert("Error al registrar: <?php echo addslashes($response['error']); ?>");
-        </script>
-        <?php
+        // Preparar datos para la API
+        $data = [
+            'empresa' => $empresa,
+            'email' => $email,
+            'telefono' => $telefono,
+            'direccion' => $direccion,
+            'pais' => $pais
+        ];
+        
+        // Agregar campos opcionales
+        if (!empty($nit)) {
+            $data['nit'] = $nit;
+        }
+        if (!empty($contacto_nombre)) {
+            $data['contacto_nombre'] = $contacto_nombre;
+        }
+        if (!empty($contacto_cargo)) {
+            $data['contacto_cargo'] = $contacto_cargo;
+        }
+        if (!empty($ciudad)) {
+            $data['ciudad'] = $ciudad;
+        }
+        if (!empty($sitio_web)) {
+            $data['sitio_web'] = $sitio_web;
+        }
+        
+        // Preparar archivos si existen
+        $files = [];
+        if (isset($_FILES['logo']) && $_FILES['logo']['error'] === 0) {
+            $files['logo'] = $_FILES['logo'];
+        }
+        
+        // Enviar a la API
+        $response = $api->post('/proveedor', $data, $files);
+        
+        if ($response['success']) {
+            header('Location: proveedorLista.php?success=1');
+            exit();
+        } else {
+            $error_message = $response['error'] ?? 'Error al registrar proveedor';
+        }
     }
 }
 
-include("../vista/proveedorRegistro.php");
+// Incluir vista
+include(__DIR__ . '/../vista/proveedorRegistro.php');
 ?>

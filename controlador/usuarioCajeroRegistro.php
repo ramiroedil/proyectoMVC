@@ -21,13 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'ci' => $ci,
         'fecha_nacimiento' => $fecha_nacimiento,
         'email' => $email,
-        'tipo_usuario' => 'cliente'
+        'tipo_usuario' => 'cajero'
     ]);
     
     if ($response['success']) {
         ?>
         <script type="text/javascript">
-            alert("Cliente registrado correctamente");
+            alert("Cajero registrado correctamente");
             location.href = '../controlador/usuarioLista.php';
         </script>
         <?php
@@ -41,5 +41,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-include("../vista/usuarioCliRegistro.php");
-?>  
+include("../vista/usuarioCajRegistro.php");
+?>

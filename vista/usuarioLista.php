@@ -1,11 +1,15 @@
 <?php include("../componentes/header.php"); ?>
 
-<div class="row justify-content-center mb-3">
-    <div class="col-md-2">
-        <a href="../controlador/usuarioRegistro.php" class="btn btn-success btn-sm w-100">
-            <i class="fas fa-user-plus"></i> Nuevo Usuario
-        </a>
-    </div>
+<div class="d-flex justify-content-center gap-2 mb-3">
+    <a href="../controlador/usuarioRegistro.php" class="btn btn-success btn-sm">
+        <i class="fas fa-user-plus"></i> Nuevo Usuario
+    </a>
+    <a href="../controlador/clienteLista.php" class="btn btn-warning btn-sm">
+        <i class="fas fa-user"></i> Lista de Clientes
+    </a>
+    <a href="../controlador/empleadoLista.php" class="btn btn-primary btn-sm">
+        <i class="fas fa-user"></i> Lista de Empleados
+    </a>
 </div>
 
 <div class="card shadow">

@@ -1,28 +1,29 @@
 <?php
 require_once(__DIR__ . '/../modelo/ApiClient.php');
 
-if (!isset($_GET['id'])) {
-    header('Location: ../controlador/proveedorLista.php');
+$api = new ApiClient();
+
+// Validar ID
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    header('Location: proveedorLista.php?error=1');
     exit();
 }
 
 $id = intval($_GET['id']);
-$api = new ApiClient();
+
+if ($id <= 0) {
+    header('Location: proveedorLista.php?error=1');
+    exit();
+}
+
+// Enviar DELETE a la API
 $response = $api->delete("/proveedor/{$id}");
 
 if ($response['success']) {
-    ?>
-    <script type="text/javascript">
-        alert("Proveedor eliminado correctamente");
-        location.href = '../controlador/proveedorLista.php';
-    </script>
-    <?php
+    header('Location: proveedorLista.php?success=1');
+    exit();
 } else {
-    ?>
-    <script type="text/javascript">
-        alert("Error al eliminar: <?php echo addslashes($response['error']); ?>");
-        location.href = '../controlador/proveedorLista.php';
-    </script>
-    <?php
+    header('Location: proveedorLista.php?error=1');
+    exit();
 }
 ?>

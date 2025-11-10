@@ -6,7 +6,7 @@ class Session {
         if (self::$configured) {
             return;
         }
-        
+         if (session_status() === PHP_SESSION_NONE) {
         ini_set('session.gc_maxlifetime', 3600);        // 1 hora
         ini_set('session.cookie_lifetime', 3600);       // 1 hora
         ini_set('session.cookie_httponly', 1);          // Solo HTTP
@@ -14,7 +14,7 @@ class Session {
         ini_set('session.cookie_secure', 0);            // 0=HTTP, 1=HTTPS
         ini_set('session.use_strict_mode', 1);          // Modo estricto
         ini_set('session.cookie_samesite', 'Lax');      // Protección CSRF
-        
+         }
         self::$configured = true;
     }
     public static function start() {
