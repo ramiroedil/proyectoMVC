@@ -1,25 +1,12 @@
 <?php
 
 require_once(__DIR__ . '/../helpers/Session.php');
+require_once(__DIR__ . '/../config/config.php');
 Session::start();
 
 $carrito = Session::get('carrito_ventas1', []);
 
-// ✅ DEBUG: Ver qué hay en el carrito
-error_log('═══════════════════════════════════════════');
-error_log('📦 CONTENIDO DEL CARRITO:');
-error_log(json_encode($carrito, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-error_log('═══════════════════════════════════════════');
 
-// Mostrar en la página
-echo "<script>";
-echo "console.log('%c CARRITO ACTUAL ', 'background: #00ff00; color: black; font-weight: bold;');";
-echo "console.log(" . json_encode($carrito, JSON_UNESCAPED_UNICODE) . ");";
-echo "</script>";
-
-// ... resto del código
-
-// PROCESAR SOLO LA ACCIÓN DE ELIMINAR
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['accion'] === 'eliminar') {
     if (isset($_POST['indice'])) {
         $indice = intval($_POST['indice']);
@@ -38,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
     exit();
 }
 
-// Función para calcular el total del carrito
 function calcularTotal()
 {
     $total = 0;
@@ -177,5 +163,6 @@ include("../componentes/header.php");
         </div>
     </div>
 </div>
+<script src="assets/js/recuperar-carrito.js"></script>
 
 <?php include("../componentes/footer.php"); ?>

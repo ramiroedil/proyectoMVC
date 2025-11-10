@@ -2,16 +2,6 @@
 require_once(__DIR__ . '/../helpers/Session.php');
 Session::start();
 
-// DEBUG EN LOGS DEL SERVIDOR
-error_log('═══════════════════════════════════════════');
-error_log('📥 REGISTRO VENTA - Productos recibidos:');
-error_log('Total: ' . count($productos));
-if (!empty($productos)) {
-    foreach (array_slice($productos, 0, 3) as $p) {
-        error_log("✅ ID {$p['id']}: {$p['nombre']} - Imagen: " . ($p['imagen'] ?? 'NULL'));
-    }
-}
-error_log('═══════════════════════════════════════════');
 
 include("../componentes/header.php");
 ?>
@@ -88,7 +78,6 @@ include("../componentes/header.php");
 </style>
 
 <div class="container-fluid py-4">
-    <!-- HEADER -->
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center">
@@ -112,7 +101,6 @@ include("../componentes/header.php");
         </div>
     </div>
 
-    <!-- VERIFICAR SI HAY PRODUCTOS -->
     <?php if (empty($productos)): ?>
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <i class="fas fa-exclamation-triangle"></i>
@@ -120,15 +108,11 @@ include("../componentes/header.php");
             <p>En este momento no tenemos productos en stock.</p>
         </div>
     <?php else: ?>
-        <!-- GRID DE PRODUCTOS -->
         <div class="row">
             <?php foreach ($productos as $producto): ?>
                 <?php
-                // ✅ VALIDACIÓN: Asegurar que la imagen viene correctamente
                 $imagen = $producto['imagen'] ?? null;
                 $imagenUrl = !empty($imagen) ? IMAGE_URL . htmlspecialchars($imagen) : IMAGE_DEFAULT;
-                
-                // Validar stock
                 $stock = intval($producto['stock'] ?? 0);
                 $enStock = $stock > 0;
                 $stockBajo = $stock > 0 && $stock <= 5;
@@ -136,7 +120,7 @@ include("../componentes/header.php");
 
                 <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                     <div class="card product-card h-100">
-                        <!-- IMAGEN DEL PRODUCTO -->
+          
                         <div class="product-img-container position-relative">
                             <img src="<?= $imagenUrl; ?>"
                                 class="card-img-top"
@@ -144,7 +128,6 @@ include("../componentes/header.php");
                                 onerror="console.error('❌ Error cargando imagen:', this.src); this.src='<?= IMAGE_DEFAULT ?>'; this.onerror=null;"
                                 onload="console.log('✅ Imagen cargada:', this.src)">
 
-                            <!-- BADGE DE STOCK -->
                             <?php if (!$enStock): ?>
                                 <span class="stock-badge out">AGOTADO</span>
                             <?php elseif ($stockBajo): ?>
@@ -154,11 +137,9 @@ include("../componentes/header.php");
                             <?php endif; ?>
                         </div>
 
-                        <!-- INFORMACIÓN DEL PRODUCTO -->
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title"><?= htmlspecialchars($producto['nombre']); ?></h5>
 
-                            <!-- DESCRIPCIÓN -->
                             <?php if (!empty($producto['descripcion'])): ?>
                                 <p class="card-text small text-muted">
                                     <?= htmlspecialchars(substr($producto['descripcion'], 0, 80)); ?>
@@ -166,21 +147,15 @@ include("../componentes/header.php");
                                 </p>
                             <?php endif; ?>
 
-                            <!-- DETALLES DEL PRODUCTO -->
                             <div class="product-details mb-3">
-                                <!-- PRECIO -->
                                 <p class="mb-1">
                                     <span class="precio-producto">Bs <?= number_format($producto['precio_venta'], 2); ?></span>
                                 </p>
-
-                                <!-- INFORMACIÓN ADICIONAL -->
                                 <?php if (!empty($producto['marca'])): ?>
                                     <p class="mb-1 small">
                                         <i class="fas fa-tag"></i> <strong>Marca:</strong> <?= htmlspecialchars($producto['marca']); ?>
                                     </p>
                                 <?php endif; ?>
-
-                                <!-- STOCK -->
                                 <p class="mb-0 text-muted">
                                     <small>
                                         <i class="fas fa-cube"></i> Stock: <strong><?= $stock; ?> unidades</strong>
@@ -188,15 +163,12 @@ include("../componentes/header.php");
                                 </p>
                             </div>
 
-                            <!-- FORMULARIO PARA AGREGAR AL CARRITO -->
-                            <form method="POST" action="../controlador/controladorAgregarCarrito.php" class="mt-auto">
-                                <!-- CAMPOS OCULTOS CON INFORMACIÓN DEL PRODUCTO -->
+                            <form method="POST" action="../controlador/controlaventaCarrito.php" class="mt-auto">
+                               
                                 <input type="hidden" name="id_producto" value="<?= $producto['id']; ?>">
                                 <input type="hidden" name="nombrep" value="<?= htmlspecialchars($producto['nombre']); ?>">
                                 <input type="hidden" name="descripcion" value="<?= htmlspecialchars($producto['descripcion'] ?? ''); ?>">
                                 <input type="hidden" name="precio" value="<?= $producto['precio_venta']; ?>">
-
-                                <!-- ✅ CRÍTICO: CAMPO IMAGEN VALIDADO -->
                                 <input type="hidden" name="imagen" value="<?= htmlspecialchars($imagen ?? ''); ?>">
 
                                 <?php if ($enStock): ?>
@@ -222,7 +194,6 @@ include("../componentes/header.php");
                     </div>
                 </div>
 
-                <!-- DEBUG EN CONSOLA DEL NAVEGADOR -->
                 <script>
                     console.log('%c🛍️  Producto ID <?= $producto["id"] ?>', 'color: #0066ff; font-weight: bold;');
                     console.log('   Nombre:', '<?= htmlspecialchars($producto["nombre"]); ?>');
@@ -235,8 +206,7 @@ include("../componentes/header.php");
     <?php endif; ?>
 </div>
 
-<!-- SCRIPT GLOBAL DEBUG -->
-<script>
+<!-- <script>
     console.log('%c═══════════════════════════════════════', 'color: #00ff00;');
     console.log('%c REGISTRO VENTA - INFORMACIÓN GLOBAL', 'color: #00ff00; font-weight: bold;');
     console.log('%c═══════════════════════════════════════', 'color: #00ff00;');
@@ -245,6 +215,6 @@ include("../componentes/header.php");
     console.log('Total productos:', <?= count($productos); ?>);
     console.log('Productos:', <?= json_encode($productos, JSON_UNESCAPED_UNICODE); ?>);
     console.log('%c═══════════════════════════════════════', 'color: #00ff00;');
-</script>
-
+</script> -->
+<script src="assets/js/recuperar-carrito.js"></script>
 <?php include("../componentes/footer.php"); ?>      

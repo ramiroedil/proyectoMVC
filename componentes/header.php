@@ -20,7 +20,7 @@ $usuarioActual = Session::getUser();
     <link rel="stylesheet" href="../assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="../assets/css/fullcalendar.css" />
     <link rel="stylesheet" href="../assets/css/main.css" />
-    <link rel="stylesheet" href="../vendor/fontawesome-free-5.15.4-web/css/all.css">
+    <link rel="stylesheet" href="../vendor/fontawesome-free/css/all.css">
 </head>
 
 <body class="d-flex flex-column" style="height: 100vh">

@@ -13,13 +13,12 @@ if (isset($_GET['sw'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login JUGUETERIA CRONCHK</title>
 
-  <!-- ========== All CSS files linkup ========= -->
   <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
   <link rel="stylesheet" href="assets/css/lineicons.css" />
   <link rel="stylesheet" href="assets/css/materialdesignicons.min.css" />
   <link rel="stylesheet" href="assets/css/fullcalendar.css" />
   <link rel="stylesheet" href="assets/css/main.css" />
-  <link rel="stylesheet" href="vendor/fontawesome-free-5.15.4-web/css/all.css">
+  <link rel="stylesheet" href="vendor/fontawesome-free/css/all.css">
   <style>
     body {
       margin: 0;
@@ -318,8 +317,8 @@ if (isset($_GET['sw'])) {
     </form>
 
     <div class="form-footer">
-      ¿No tienes cuenta? <a href="#">Regístrate aquí</a>
-    </div>
+  ¿No tienes cuenta? <a href="controlador/usuarioClienteRegistro.php">Regístrate aquí</a>
+</div>
   </div>
   <script>
     const togglePassword = document.getElementById('togglePassword');

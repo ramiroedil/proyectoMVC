@@ -200,11 +200,58 @@ function mostrarNotificacion(tipo, mensaje) {
    ======================================== */
 
 /**
+ * Manejar click en botón "Proceder a Comprar"
+ */
+function procederAComprar() {
+    const carrito = document.getElementById('carrito-count');
+    const cantidadProductos = parseInt(carrito?.textContent || 0);
+    
+    if (cantidadProductos === 0) {
+        mostrarNotificacion('error', 'Tu carrito está vacío');
+        return;
+    }
+    
+    console.log('🛒 Redirigiendo a login con carrito de', cantidadProductos, 'producto(s)');
+    
+    // Guardar carrito en sessionStorage para recuperarlo después de login
+    fetch('index.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'action=obtener_carrito'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Guardar en sessionStorage (se borra al cerrar navegador)
+            sessionStorage.setItem('carrito_backup', JSON.stringify(data.carrito));
+            mostrarNotificacion('success', 'Redirigiendo al inicio de sesión...');
+            
+            // Redirigir después de 1 segundo
+            setTimeout(() => {
+                window.location.href = 'inicio_sesion.php';
+            }, 1000);
+        }
+    })
+    .catch(error => {
+        console.error('❌ Error:', error);
+        mostrarNotificacion('error', 'Error al procesar');
+    });
+}
+
+/**
  * Inicializar la página cuando carga el DOM
  */
 document.addEventListener('DOMContentLoaded', function() {
     console.log('📄 DOM cargado');
     actualizarCarrito();
+    
+    // ✅ Agregar evento al botón de compra
+    const btnComprar = document.getElementById('btn-comprar');
+    if (btnComprar) {
+        btnComprar.addEventListener('click', procederAComprar);
+    }
     
     // Scroll suave en navbar
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

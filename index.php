@@ -133,5 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 }
 
+
 include(__DIR__ . '/vista/portal-publico.php');
 ?>
+<script src="assets/js/recuperar-carrito.js"></script>

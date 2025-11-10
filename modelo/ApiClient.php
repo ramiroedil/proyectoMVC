@@ -10,6 +10,9 @@ class ApiClient
 
     public function __construct()
     {
+        // Iniciar sesión primero
+        Session::start();
+        
         $this->base_url = API_BASE_URL;
         $this->timeout = API_TIMEOUT;
         $this->token = Session::get('token');
@@ -35,7 +38,8 @@ class ApiClient
 
         return $this->handleResponse($response, $http_code, $error);
     }
-public function post($endpoint, $data = [], $files = [])
+
+    public function post($endpoint, $data = [], $files = [], $autoRedirect = true)
     {
         $ch = curl_init($this->base_url . $endpoint);
 
@@ -47,15 +51,10 @@ public function post($endpoint, $data = [], $files = [])
                 }
             }
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Authorization: Bearer ' . $this->token
-            ]);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $this->getHeaders());
         } else {
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Content-Type: application/json',
-                'Accept: application/json'
-            ]);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $this->getHeaders());
         }
 
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -67,12 +66,9 @@ public function post($endpoint, $data = [], $files = [])
         $error = curl_error($ch);
         curl_close($ch);
 
-        return $this->handleResponse($response, $http_code, $error);
+        return $this->handleResponse($response, $http_code, $error, $autoRedirect);
     }
 
-    /**
-     * PUT request
-     */
     public function put($endpoint, $data = [])
     {
         $ch = curl_init($this->base_url . $endpoint);
@@ -91,9 +87,6 @@ public function post($endpoint, $data = [], $files = [])
         return $this->handleResponse($response, $http_code, $error);
     }
 
-    /**
-     * PATCH request
-     */
     public function patch($endpoint, $data = [])
     {
         $ch = curl_init($this->base_url . $endpoint);
@@ -112,9 +105,6 @@ public function post($endpoint, $data = [], $files = [])
         return $this->handleResponse($response, $http_code, $error);
     }
 
-    /**
-     * DELETE request
-     */
     public function delete($endpoint)
     {
         $ch = curl_init($this->base_url . $endpoint);
@@ -132,9 +122,6 @@ public function post($endpoint, $data = [], $files = [])
         return $this->handleResponse($response, $http_code, $error);
     }
 
-    /**
-     * Headers por defecto
-     */
     private function getHeaders()
     {
         $headers = [
@@ -142,17 +129,14 @@ public function post($endpoint, $data = [], $files = [])
             'Accept: application/json'
         ];
 
-        if ($this->token) {
+        if (!empty($this->token)) {
             $headers[] = 'Authorization: Bearer ' . $this->token;
         }
 
         return $headers;
     }
 
-    /**
-     * Manejar respuesta de API
-     */
-    private function handleResponse($response, $http_code, $error)
+    private function handleResponse($response, $http_code, $error, $autoRedirect = true)
     {
         if ($error) {
             return [
@@ -173,10 +157,10 @@ public function post($endpoint, $data = [], $files = [])
             ];
         }
 
-        // Unauthorized (401)
-        if ($http_code == 401) {
+        // Unauthorized (401) - solo redirigir si se permite y hay token
+        if ($http_code == 401 && $this->token && $autoRedirect) {
             Session::destroy();
-            header('Location: ../inicio_sesion.php?sw=2');
+            header('Location: ' . BASE_URL . '/index.php?sw=2');
             exit();
         }
 

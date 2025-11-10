@@ -7,12 +7,8 @@
     <meta data-image-url="<?= IMAGE_URL ?>" />
     
     <title>Tienda de Juguetes - Juvenil</title>
-
     <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-    
-    <link rel="stylesheet" href="vendor/fontawesome-free-5.15.4-web/css/all.css">
-    
-
+    <link rel="stylesheet" href="vendor/fontawesome-free/css/all.css">
     <link rel="stylesheet" href="assets/css/portal-publico.css">
 </head>
 <body>
@@ -43,32 +39,23 @@
         </div>
     </nav>
 
-    <!-- ========================================
-         HERO SECTION
-         ======================================== -->
     <div class="hero-section">
         <div class="container">
             <h1><i class="fas fa-gamepad"></i> Bienvenido a Juvenil</h1>
             <p>Descubre la mayor variedad de juguetes y diversión para todas las edades</p>
         </div>
     </div>
-
-    <!-- ========================================
-         CATEGORÍAS
-         ======================================== -->
     <div class="container py-4">
         <div class="categorias-container">
             <h3 class="categorias-titulo">
                 <i class="fas fa-list"></i> Explora nuestras categorías
             </h3>
             <div class="d-flex flex-wrap gap-3">
-                <!-- Botón "Todas las categorías" -->
                 <a href="?cat=todas" 
                    class="btn categoria-btn<?= $activa === 'todas' ? ' active' : '' ?>">
                     <i class="fas fa-th"></i> Todas las categorías
                 </a>
 
-                <!-- Botones por categoría -->
                 <?php foreach ($categorias as $catId => $catNombre): ?>
                     <a href="?cat=<?= urlencode($catId) ?>"
                        class="btn categoria-btn<?= $catId == $activa ? ' active' : '' ?>">
@@ -79,9 +66,6 @@
         </div>
     </div>
 
-    <!-- ========================================
-         CONTADOR DE PRODUCTOS
-         ======================================== -->
     <div class="container mb-3">
         <p class="text-muted">
             <i class="fas fa-info-circle"></i> 
@@ -92,20 +76,17 @@
         </p>
     </div>
 
-    <!-- ========================================
-         GRID DE PRODUCTOS
-         ======================================== -->
     <div class="container py-4 pb-5">
         <?php if (!empty($productosActivos)): ?>
             <div class="row g-4" id="productosContainer">
                 <?php foreach ($productosActivos as $prod): 
-                    // Validar imagen
+
                     $imagen = $prod['imagen'] ?? null;
                     $imagenUrl = !empty($imagen) ? IMAGE_URL . htmlspecialchars($imagen) : IMAGE_DEFAULT;
                 ?>
                         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                             <div class="card card-producto">
-                                <!-- IMAGEN DEL PRODUCTO -->
+                       
                                 <?php if (!empty($prod['imagen'])): ?>
                                     <img src="<?= $imagenUrl; ?>" 
                                          class="card-img-top" 
@@ -117,8 +98,7 @@
                                         <i class="fas fa-image"></i>
                                     </div>
                                 <?php endif; ?>
-                                
-                                <!-- CUERPO DEL PRODUCTO -->
+            
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title" style="color: #e85d04;">
                                         <?= htmlspecialchars($prod['nombre']) ?>
@@ -127,7 +107,6 @@
                                         <?= htmlspecialchars(substr($prod['descripcion'] ?? '', 0, 50)) ?>...
                                     </p>
                                     
-                                    <!-- BADGE DE CATEGORÍA -->
                                     <p class="mb-2">
                                         <small>
                                             <span class="badge-categoria">
@@ -135,8 +114,7 @@
                                             </span>
                                         </small>
                                     </p>
-                                    
-                                    <!-- PRECIO Y BOTÓN -->
+
                                     <div class="mt-auto">
                                         <p class="precio mb-2">Bs <?= number_format($prod['precio_venta'], 2) ?></p>
                                         
@@ -160,7 +138,7 @@
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <!-- SIN PRODUCTOS -->
+
             <div class="sin-productos">
                 <i class="fas fa-inbox"></i>
                 <h4>No hay productos disponibles</h4>
@@ -169,19 +147,15 @@
         <?php endif; ?>
     </div>
 
-    <!-- ========================================
-         MODAL DEL CARRITO
-         ======================================== -->
     <div class="modal fade" id="carritoModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content modal-carrito">
-                <!-- HEADER DEL MODAL -->
+
                 <div class="modal-header" style="background: linear-gradient(90deg, #e85d04, #f48c06); color: white; border: none;">
                     <h5 class="modal-title"><i class="fas fa-shopping-cart"></i> Mi Carrito</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
 
-                <!-- BODY DEL MODAL -->
                 <div class="modal-body" id="carrito-contenido">
                     <div class="alert alert-info-carrito">
                         <i class="fas fa-info-circle"></i> 
@@ -190,7 +164,7 @@
                     <div id="lista-carrito"></div>
                 </div>
 
-                <!-- FOOTER DEL MODAL -->
+
                 <div class="modal-footer" style="background: #f8f9fa; border-top: 2px solid #ffe066;">
                     <div class="w-100 mb-3" id="total-carrito"></div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Seguir Comprando</button>
@@ -202,14 +176,7 @@
         </div>
     </div>
 
-    <!-- ========================================
-         SCRIPTS
-         ======================================== -->
-    
-    <!-- Bootstrap JS -->
     <script src="assets/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Script Personalizado -->
     <script src="assets/js/portal-publico.js"></script>
 </body>
 </html>
